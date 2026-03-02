@@ -1,4 +1,6 @@
 using Claims.Auditing;
+using Claims.Domain.Enums;
+using Claims.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
