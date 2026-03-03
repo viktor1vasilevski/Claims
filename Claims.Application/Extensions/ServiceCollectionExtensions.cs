@@ -1,7 +1,7 @@
 ﻿using Claims.Application.Channels;
 using Claims.Application.Interfaces;
 using Claims.Application.Services;
-using Claims.Application.Validations.Cover;
+using Claims.Application.Validations.Claims;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,7 +15,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICoversService, CoversService>();
         services.AddScoped<IAuditService, AuditService>();
 
-        services.AddValidatorsFromAssemblyContaining<CreateCoverRequestValidator>();
+        services.AddValidatorsFromAssemblyContaining<CreateClaimRequestValidator>(ServiceLifetime.Transient);
+
 
         services.AddSingleton<AuditChannel>();
 

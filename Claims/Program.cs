@@ -1,36 +1,19 @@
+using Claims.Api.Extensions;
 using Claims.Application.Extensions;
-using Claims.Application.Validations.Claims;
 using Claims.Infrastructure.Context;
 using Claims.Infrastructure.Extensions;
 using Claims.Middleware;
-using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Driver;
-using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
-using Testcontainers.MongoDb;
-using Testcontainers.MsSql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Start Testcontainers for SQL Server and MongoDB
-var sqlContainer = (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
-        ? new MsSqlBuilder()
-            .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
-        : new()
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-    ).Build();
+var (sqlConnectionString, mongoConnectionString) = await TestContainersExtensions.StartContainersAsync();
 
-var mongoContainer = new MongoDbBuilder()
-    .WithImage("mongo:latest")
-    .Build();
-
-await sqlContainer.StartAsync();
-Console.WriteLine($"SQL: {sqlContainer.GetConnectionString()}");
-await mongoContainer.StartAsync();
-
-// Add services to the container.
 builder.Services
     .AddControllers()
     .AddJsonOptions(x =>
@@ -38,32 +21,18 @@ builder.Services
         x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
-builder.Services.AddDbContext<AuditContext>(options =>
-    options.UseSqlServer(sqlContainer.GetConnectionString()));
-
-builder.Services.AddDbContext<ClaimsContext>(options =>
-{
-    var client = new MongoClient(mongoContainer.GetConnectionString());
-    var database = client.GetDatabase(builder.Configuration["MongoDb:DatabaseName"]); // Use a default/test database name
-    options.UseMongoDB(database.Client, database.DatabaseNamespace.DatabaseName);
-});
+builder.Services.AddDbContexts(sqlConnectionString, mongoConnectionString, builder.Configuration["MongoDb:DatabaseName"]!);
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 
-builder.Services.AddValidatorsFromAssemblyContaining<CreateClaimRequestValidator>(ServiceLifetime.Transient);
 builder.Services.AddFluentValidationAutoValidation();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
