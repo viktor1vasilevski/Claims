@@ -1,5 +1,6 @@
 ﻿using Claims.Application.DTOs;
 using Claims.Application.Interfaces;
+using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
 
 namespace Claims.Application.Services;
