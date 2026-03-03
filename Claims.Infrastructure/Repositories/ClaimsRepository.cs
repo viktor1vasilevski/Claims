@@ -1,27 +1,24 @@
 ﻿using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
+using Claims.Infrastructure.Context;
 
 namespace Claims.Infrastructure.Repositories;
 
-public class ClaimsRepository : IClaimsRepository
+public class ClaimsRepository(ClaimsContext _context) : IClaimsRepository
 {
-    public Task CreateClaimAsync(Claim claim)
+
+    public async Task<IEnumerable<Claim>> GetClaimsAsync()
+        => await _context.GetClaimsAsync();
+
+    public async Task<Claim?> GetClaimAsync(string id)
+        => await _context.GetClaimAsync(id);
+
+    public async Task CreateClaimAsync(Claim claim)
     {
-        throw new NotImplementedException();
+        claim.Id = Guid.NewGuid().ToString();
+        await _context.AddItemAsync(claim);
     }
 
-    public Task DeleteClaimAsync(string id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<Claim?> GetClaimAsync(string id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<Claim>> GetClaimsAsync()
-    {
-        throw new NotImplementedException();
-    }
+    public async Task DeleteClaimAsync(string id)
+        => await _context.DeleteItemAsync(id);
 }

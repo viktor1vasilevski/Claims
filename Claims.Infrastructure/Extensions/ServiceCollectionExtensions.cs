@@ -10,7 +10,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IClaimsRepository, ClaimsRepository>();
         //services.AddScoped<ICoversRepository, CoversRepository>();
-        services.AddScoped<Auditer>();
+        services.AddScoped<IAuditRepository, AuditRepository>();
+
         return services;
     }
 }

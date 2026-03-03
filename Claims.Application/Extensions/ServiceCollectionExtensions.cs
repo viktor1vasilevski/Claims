@@ -10,6 +10,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IClaimsService, ClaimsService>();
         //services.AddScoped<ICoversService, CoversService>();
+        services.AddScoped<IAuditService, AuditService>();
+
         return services;
     }
 }
