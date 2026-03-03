@@ -27,6 +27,7 @@ var mongoContainer = new MongoDbBuilder()
     .Build();
 
 await sqlContainer.StartAsync();
+Console.WriteLine($"SQL: {sqlContainer.GetConnectionString()}");
 await mongoContainer.StartAsync();
 
 // Add services to the container.

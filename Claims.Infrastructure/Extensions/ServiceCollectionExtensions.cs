@@ -1,4 +1,5 @@
 ﻿using Claims.Domain.Interfaces;
+using Claims.Infrastructure.BackgroundServices;
 using Claims.Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IClaimsRepository, ClaimsRepository>();
         services.AddScoped<ICoversRepository, CoversRepository>();
         services.AddScoped<IAuditRepository, AuditRepository>();
+
+        services.AddHostedService<AuditBackgroundService>();
 
         return services;
     }

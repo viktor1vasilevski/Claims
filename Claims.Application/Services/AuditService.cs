@@ -1,30 +1,17 @@
-﻿using Claims.Application.Interfaces;
-using Claims.Domain.Interfaces;
-using Claims.Domain.Models;
+﻿using Claims.Application.Channels;
+using Claims.Application.Interfaces;
 
 namespace Claims.Application.Services;
 
-public class AuditService(IAuditRepository _auditRepository) : IAuditService
+public class AuditService(AuditChannel _auditChannel) : IAuditService
 {
     public async Task AuditClaimAsync(string id, string httpRequestType)
     {
-        var claimAudit = new ClaimAudit
-        {
-            ClaimId = id,
-            Created = DateTime.UtcNow,
-            HttpRequestType = httpRequestType
-        };
-        await _auditRepository.AddClaimAuditAsync(claimAudit);
+        await _auditChannel.Writer.WriteAsync(new AuditMessage(id, httpRequestType, "Claim"));
     }
 
     public async Task AuditCoverAsync(string id, string httpRequestType)
     {
-        var coverAudit = new CoverAudit
-        {
-            CoverId = id,
-            Created = DateTime.UtcNow,
-            HttpRequestType = httpRequestType
-        };
-        await _auditRepository.AddCoverAuditAsync(coverAudit);
+        await _auditChannel.Writer.WriteAsync(new AuditMessage(id, httpRequestType, "Cover"));
     }
 }

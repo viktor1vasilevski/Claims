@@ -1,4 +1,5 @@
-﻿using Claims.Application.Interfaces;
+﻿using Claims.Application.Channels;
+using Claims.Application.Interfaces;
 using Claims.Application.Services;
 using Claims.Application.Validations.Cover;
 using FluentValidation;
@@ -15,6 +16,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuditService, AuditService>();
 
         services.AddValidatorsFromAssemblyContaining<CreateCoverRequestValidator>();
+
+        services.AddSingleton<AuditChannel>();
 
         return services;
     }
