@@ -4,10 +4,12 @@ using Claims.Application.Requests.Cover;
 using Claims.Domain.Enums;
 using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
+using FluentValidation;
 
 namespace Claims.Application.Services;
 
-public class CoversService(ICoversRepository _coversRepository, IAuditService _auditService) : ICoversService
+public class CoversService(ICoversRepository _coversRepository, IAuditService _auditService,
+    IValidator<CreateCoverRequest> _validator) : ICoversService
 {
 
     public async Task<IEnumerable<CoverDto>> GetCoversAsync()
@@ -24,6 +26,10 @@ public class CoversService(ICoversRepository _coversRepository, IAuditService _a
 
     public async Task<CoverDto> CreateCoverAsync(CreateCoverRequest request)
     {
+        //var validationResult = await _validator.ValidateAsync(request);
+        //if (!validationResult.IsValid)
+        //    throw new ValidationException(validationResult.Errors);
+
         var cover = new Cover
         {
             Id = Guid.NewGuid().ToString(),

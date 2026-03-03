@@ -14,7 +14,7 @@ public class CoversController(ICoversService _coversService) : ControllerBase
 
     [HttpPost("compute")]
     public ActionResult ComputePremium(DateTime startDate, DateTime endDate, CoverType coverType)
-    => Ok(_coversService.ComputePremium(startDate, endDate, coverType));
+        => Ok(_coversService.ComputePremium(startDate, endDate, coverType));
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CoverDto>>> GetAsync()

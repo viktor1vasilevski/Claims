@@ -1,5 +1,7 @@
 ﻿using Claims.Application.Interfaces;
 using Claims.Application.Services;
+using Claims.Application.Validations.Cover;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Claims.Application.Extensions;
@@ -11,6 +13,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IClaimsService, ClaimsService>();
         services.AddScoped<ICoversService, CoversService>();
         services.AddScoped<IAuditService, AuditService>();
+
+        services.AddValidatorsFromAssemblyContaining<CreateCoverRequestValidator>();
 
         return services;
     }

@@ -3,10 +3,12 @@ using Claims.Application.Interfaces;
 using Claims.Application.Requests.Claims;
 using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
+using FluentValidation;
 
 namespace Claims.Application.Services;
 
-public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _auditService) : IClaimsService
+public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _auditService, 
+    ICoversRepository _coversRepository) : IClaimsService
 {
     public async Task<List<ClaimDto>> GetClaimsAsync()
     {
@@ -22,6 +24,13 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
 
     public async Task<ClaimDto> CreateClaimAsync(CreateClaimRequest request)
     {
+        var cover = await _coversRepository.GetCoverAsync(request.CoverId);
+        if (cover is null)
+            throw new ArgumentException("Cover not found.");
+
+        if (request.Created < cover.StartDate || request.Created > cover.EndDate)
+            throw new ArgumentException("Created date must be within the Cover period.");
+
         var claim = new Claim
         {
             Id = Guid.NewGuid().ToString(),

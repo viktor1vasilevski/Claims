@@ -1,12 +1,16 @@
+using Claims.Application.Extensions;
+using Claims.Application.Validations.Claims;
 using Claims.Infrastructure.Context;
+using Claims.Infrastructure.Extensions;
+using Claims.Middleware;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using Testcontainers.MongoDb;
 using Testcontainers.MsSql;
-using Claims.Application.Extensions;
-using Claims.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,9 +50,15 @@ builder.Services.AddDbContext<ClaimsContext>(options =>
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 
+builder.Services.AddValidatorsFromAssemblyContaining<CreateClaimRequestValidator>(ServiceLifetime.Transient);
+builder.Services.AddFluentValidationAutoValidation();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
@@ -60,6 +70,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseExceptionHandler();
 
 app.UseAuthorization();
 
