@@ -9,7 +9,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddScoped<IClaimsRepository, ClaimsRepository>();
-        //services.AddScoped<ICoversRepository, CoversRepository>();
+        services.AddScoped<ICoversRepository, CoversRepository>();
         services.AddScoped<IAuditRepository, AuditRepository>();
 
         return services;

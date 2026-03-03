@@ -1,5 +1,6 @@
 ﻿using Claims.Application.DTOs;
 using Claims.Application.Interfaces;
+using Claims.Application.Requests.Claims;
 using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
 
@@ -19,10 +20,21 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
         return claim is null ? null : MapToDto(claim);
     }
 
-    public async Task CreateClaimAsync(Claim claim)
+    public async Task<ClaimDto> CreateClaimAsync(CreateClaimRequest request)
     {
+        var claim = new Claim
+        {
+            Id = Guid.NewGuid().ToString(),
+            CoverId = request.CoverId,
+            Created = request.Created,
+            Name = request.Name,
+            Type = request.Type,
+            DamageCost = request.DamageCost
+        };
         await _claimsRepository.CreateClaimAsync(claim);
         await _auditService.AuditClaimAsync(claim.Id, "POST");
+
+        return MapToDto(claim);
     }
 
     public async Task DeleteClaimAsync(string id)

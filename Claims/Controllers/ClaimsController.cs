@@ -1,6 +1,6 @@
 using Claims.Application.DTOs;
 using Claims.Application.Interfaces;
-using Claims.Domain.Models;
+using Claims.Application.Requests.Claims;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Claims.Controllers;
@@ -15,10 +15,10 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
         => await _claimsService.GetClaimsAsync();
 
     [HttpPost]
-    public async Task<ActionResult> CreateAsync(Claim claim)
+    public async Task<ActionResult> CreateAsync(CreateClaimRequest request)
     {
-        await _claimsService.CreateClaimAsync(claim);
-        return Ok(claim);
+        var result = await _claimsService.CreateClaimAsync(request);
+        return Ok(result);
     }
 
     [HttpDelete("{id}")]

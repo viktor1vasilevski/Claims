@@ -9,7 +9,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddScoped<IClaimsService, ClaimsService>();
-        //services.AddScoped<ICoversService, CoversService>();
+        services.AddScoped<ICoversService, CoversService>();
         services.AddScoped<IAuditService, AuditService>();
 
         return services;
