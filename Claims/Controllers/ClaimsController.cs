@@ -9,23 +9,31 @@ namespace Claims.Controllers;
 [Route("[controller]")]
 public class ClaimsController(IClaimsService _claimsService) : ControllerBase
 {
-
     [HttpGet]
-    public async Task<IEnumerable<ClaimDto>> GetAsync()
-        => await _claimsService.GetClaimsAsync();
+    public async Task<ActionResult<IEnumerable<ClaimDto>>> GetAsync()
+    {
+        var result = await _claimsService.GetClaimsAsync();
+        return Ok(result);
+    }
 
     [HttpPost]
-    public async Task<ActionResult> CreateAsync(CreateClaimRequest request)
+    public async Task<ActionResult<ClaimDto>> CreateAsync(CreateClaimRequest request)
     {
         var result = await _claimsService.CreateClaimAsync(request);
         return Ok(result);
     }
 
     [HttpDelete("{id}")]
-    public async Task DeleteAsync(string id)
-        => await _claimsService.DeleteClaimAsync(id);
+    public async Task<ActionResult> DeleteAsync(string id)
+    {
+        await _claimsService.DeleteClaimAsync(id);
+        return NoContent();
+    }
 
     [HttpGet("{id}")]
-    public async Task<ClaimDto?> GetAsync(string id)
-        => await _claimsService.GetClaimAsync(id);
+    public async Task<ActionResult<ClaimDto>> GetAsync(string id)
+    {
+        var result = await _claimsService.GetClaimAsync(id);
+        return result is null ? NotFound() : Ok(result);
+    }
 }

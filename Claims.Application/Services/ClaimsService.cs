@@ -3,7 +3,6 @@ using Claims.Application.Interfaces;
 using Claims.Application.Requests.Claims;
 using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
-using FluentValidation;
 
 namespace Claims.Application.Services;
 
@@ -40,6 +39,7 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
             Type = request.Type,
             DamageCost = request.DamageCost
         };
+
         await _claimsRepository.CreateClaimAsync(claim);
         await _auditService.AuditClaimAsync(claim.Id, "POST");
 

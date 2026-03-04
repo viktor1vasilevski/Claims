@@ -4,7 +4,6 @@ using Claims.Application.Requests.Cover;
 using Claims.Domain.Enums;
 using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
-using FluentValidation;
 
 namespace Claims.Application.Services;
 
@@ -48,10 +47,13 @@ public class CoversService(ICoversRepository _coversRepository, IAuditService _a
 
     public decimal ComputePremium(DateTime startDate, DateTime endDate, CoverType coverType)
     {
-        var multiplier = 1.3m;
-        if (coverType == CoverType.Yacht) multiplier = 1.1m;
-        if (coverType == CoverType.PassengerShip) multiplier = 1.2m;
-        if (coverType == CoverType.Tanker) multiplier = 1.5m;
+        var multiplier = coverType switch
+        {
+            CoverType.Yacht => 1.1m,
+            CoverType.PassengerShip => 1.2m,
+            CoverType.Tanker => 1.5m,
+            _ => 1.3m
+        };
 
         var premiumPerDay = 1250 * multiplier;
         var insuranceLength = (endDate - startDate).TotalDays;
@@ -59,12 +61,22 @@ public class CoversService(ICoversRepository _coversRepository, IAuditService _a
 
         for (var i = 0; i < insuranceLength; i++)
         {
-            if (i < 30) totalPremium += premiumPerDay;
-            if (i < 180 && coverType == CoverType.Yacht) totalPremium += premiumPerDay - premiumPerDay * 0.05m;
-            else if (i < 180) totalPremium += premiumPerDay - premiumPerDay * 0.02m;
-            if (i < 365 && coverType != CoverType.Yacht) totalPremium += premiumPerDay - premiumPerDay * 0.03m;
-            else if (i < 365) totalPremium += premiumPerDay - premiumPerDay * 0.08m;
+            if (i < 30)
+            {
+                totalPremium += premiumPerDay;
+            }
+            else if (i < 180)
+            {
+                var discount = coverType == CoverType.Yacht ? 0.05m : 0.02m;
+                totalPremium += premiumPerDay - premiumPerDay * discount;
+            }
+            else
+            {
+                var discount = coverType == CoverType.Yacht ? 0.08m : 0.03m;
+                totalPremium += premiumPerDay - premiumPerDay * discount;
+            }
         }
+
         return totalPremium;
     }
 
