@@ -16,7 +16,6 @@ public class CoversRepository(ClaimsContext _context) : ICoversRepository
 
     public async Task CreateCoverAsync(Cover cover)
     {
-        cover.Id = Guid.NewGuid().ToString();
         _context.Covers.Add(cover);
         await _context.SaveChangesAsync();
     }

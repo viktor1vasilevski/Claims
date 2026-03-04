@@ -1,6 +1,6 @@
 ﻿using Claims.Application.Channels;
+using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
-using Claims.Infrastructure.Context;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -19,28 +19,22 @@ public class AuditBackgroundService(
             try
             {
                 using var scope = _scopeFactory.CreateScope();
-                var auditContext = scope.ServiceProvider.GetRequiredService<AuditContext>();
+                var auditRepository = scope.ServiceProvider.GetRequiredService<IAuditRepository>();
 
                 if (message.EntityType == "Claim")
-                {
-                    auditContext.ClaimAudits.Add(new ClaimAudit
+                    await auditRepository.AddClaimAuditAsync(new ClaimAudit
                     {
                         ClaimId = message.Id,
                         Created = DateTime.UtcNow,
                         HttpRequestType = message.HttpRequestType
                     });
-                }
                 else if (message.EntityType == "Cover")
-                {
-                    auditContext.CoverAudits.Add(new CoverAudit
+                    await auditRepository.AddCoverAuditAsync(new CoverAudit
                     {
                         CoverId = message.Id,
                         Created = DateTime.UtcNow,
                         HttpRequestType = message.HttpRequestType
                     });
-                }
-
-                await auditContext.SaveChangesAsync(stoppingToken);
             }
             catch (Exception ex)
             {
@@ -49,4 +43,4 @@ public class AuditBackgroundService(
             }
         }
     }
-}
+}   
