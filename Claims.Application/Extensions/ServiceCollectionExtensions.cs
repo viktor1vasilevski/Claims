@@ -17,7 +17,6 @@ public static class ServiceCollectionExtensions
 
         services.AddValidatorsFromAssemblyContaining<CreateClaimRequestValidator>(ServiceLifetime.Transient);
 
-
         services.AddSingleton<AuditChannel>();
 
         return services;

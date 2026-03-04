@@ -1,5 +1,6 @@
 ﻿using Claims.Application.DTOs;
 using Claims.Application.Interfaces;
+using Claims.Application.Mappers;
 using Claims.Application.Requests.Claims;
 using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
@@ -12,13 +13,13 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
     public async Task<List<ClaimDto>> GetClaimsAsync()
     {
         var claims = await _claimsRepository.GetClaimsAsync();
-        return claims.Select(MapToDto).ToList();
+        return claims.Select(ClaimMapper.ToDto).ToList();
     }
 
     public async Task<ClaimDto?> GetClaimAsync(string id)
     {
         var claim = await _claimsRepository.GetClaimAsync(id);
-        return claim is null ? null : MapToDto(claim);
+        return claim is null ? null : ClaimMapper.ToDto(claim);
     }
 
     public async Task<ClaimDto> CreateClaimAsync(CreateClaimRequest request)
@@ -43,7 +44,7 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
         await _claimsRepository.CreateClaimAsync(claim);
         await _auditService.AuditClaimAsync(claim.Id, "POST");
 
-        return MapToDto(claim);
+        return ClaimMapper.ToDto(claim);
     }
 
     public async Task DeleteClaimAsync(string id)
@@ -51,14 +52,4 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
         await _claimsRepository.DeleteClaimAsync(id);
         await _auditService.AuditClaimAsync(id, "DELETE");
     }
-
-    private static ClaimDto MapToDto(Claim claim) => new()
-    {
-        Id = claim.Id,
-        CoverId = claim.CoverId,
-        Created = claim.Created,
-        Name = claim.Name,
-        Type = claim.Type,
-        DamageCost = claim.DamageCost
-    };
 }

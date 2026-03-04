@@ -1,4 +1,3 @@
-
 using Claims.Application.DTOs;
 using Claims.Application.Interfaces;
 using Claims.Application.Requests.Cover;
@@ -11,28 +10,38 @@ namespace Claims.Controllers;
 [Route("[controller]")]
 public class CoversController(ICoversService _coversService) : ControllerBase
 {
-
     [HttpPost("compute")]
     public ActionResult ComputePremium(DateTime startDate, DateTime endDate, CoverType coverType)
-        => Ok(_coversService.ComputePremium(startDate, endDate, coverType));
+    {
+        var result = _coversService.ComputePremium(startDate, endDate, coverType);
+        return Ok(result);
+    }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CoverDto>>> GetAsync()
-        => Ok(await _coversService.GetCoversAsync());
+    {
+        var result = await _coversService.GetCoversAsync();
+        return Ok(result);
+    }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<CoverDto>> GetAsync(string id)
-        => Ok(await _coversService.GetCoverAsync(id));
+    {
+        var result = await _coversService.GetCoverAsync(id);
+        return result is null ? NotFound() : Ok(result);
+    }
 
     [HttpPost]
-    public async Task<ActionResult> CreateAsync(CreateCoverRequest request)
+    public async Task<ActionResult<CoverDto>> CreateAsync(CreateCoverRequest request)
     {
         var result = await _coversService.CreateCoverAsync(request);
         return Ok(result);
     }
 
     [HttpDelete("{id}")]
-    public async Task DeleteAsync(string id)
-        => await _coversService.DeleteCoverAsync(id);
-
+    public async Task<ActionResult> DeleteAsync(string id)
+    {
+        await _coversService.DeleteCoverAsync(id);
+        return NoContent();
+    }
 }
