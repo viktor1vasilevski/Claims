@@ -9,8 +9,7 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerDocumentation();
 
 var (sqlConnectionString, mongoConnectionString) = await TestContainersExtensions.StartContainersAsync();
 
