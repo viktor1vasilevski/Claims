@@ -1,4 +1,5 @@
-﻿using Claims.Application.DTOs;
+﻿using Claims.Application.Constants;
+using Claims.Application.DTOs;
 using Claims.Application.Interfaces;
 using Claims.Application.Mappers;
 using Claims.Application.Requests.Cover;
@@ -47,30 +48,30 @@ public class CoversService(ICoversRepository _coversRepository, IAuditService _a
     {
         var multiplier = coverType switch
         {
-            CoverType.Yacht => 1.1m,
-            CoverType.PassengerShip => 1.2m,
-            CoverType.Tanker => 1.5m,
-            _ => 1.3m
+            CoverType.Yacht => PremiumConstants.YachtMultiplier,
+            CoverType.PassengerShip => PremiumConstants.PassengerShipMultiplier,
+            CoverType.Tanker => PremiumConstants.TankerMultiplier,
+            _ => PremiumConstants.DefaultMultiplier
         };
 
-        var premiumPerDay = 1250 * multiplier;
+        var premiumPerDay = PremiumConstants.BaseDayRate * multiplier;
         var insuranceLength = (endDate - startDate).TotalDays;
         var totalPremium = 0m;
 
         for (var i = 0; i < insuranceLength; i++)
         {
-            if (i < 30)
+            if (i < PremiumConstants.FirstPeriodDays)
             {
                 totalPremium += premiumPerDay;
             }
-            else if (i < 180)
+            else if (i < PremiumConstants.SecondPeriodDays)
             {
-                var discount = coverType == CoverType.Yacht ? 0.05m : 0.02m;
+                var discount = coverType == CoverType.Yacht ? PremiumConstants.YachtFirstDiscount : PremiumConstants.DefaultFirstDiscount;
                 totalPremium += premiumPerDay - premiumPerDay * discount;
             }
             else
             {
-                var discount = coverType == CoverType.Yacht ? 0.08m : 0.03m;
+                var discount = coverType == CoverType.Yacht ? PremiumConstants.YachtSecondDiscount : PremiumConstants.DefaultSecondDiscount;
                 totalPremium += premiumPerDay - premiumPerDay * discount;
             }
         }
