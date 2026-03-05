@@ -1,5 +1,6 @@
 using Claims.Application.DTOs;
 using Claims.Application.Interfaces;
+using Claims.Application.Mappers;
 using Claims.Application.Requests.Cover;
 using Claims.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
@@ -22,9 +23,9 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     /// <returns>The computed premium.</returns>
     [HttpPost("compute")]
     [ProducesResponseType(typeof(decimal), StatusCodes.Status200OK)]
-    public ActionResult ComputePremium(DateTime startDate, DateTime endDate, CoverType coverType)
+    public async Task<ActionResult<decimal>> ComputePremium(DateTime startDate, DateTime endDate, CoverType coverType)
     {
-        var result = _coversService.ComputePremiumAsync(startDate, endDate, coverType);
+        var result = await _coversService.ComputePremiumAsync(startDate, endDate, coverType);
         return Ok(result);
     }
 
@@ -36,8 +37,8 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<CoverDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<CoverDto>>> GetAsync()
     {
-        var result = await _coversService.GetCoversAsync();
-        return Ok(result);
+        var covers = await _coversService.GetCoversAsync();
+        return Ok(covers.Select(CoverMapper.ToDto));
     }
 
     /// <summary>
@@ -50,8 +51,8 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CoverDto>> GetAsync(string id)
     {
-        var result = await _coversService.GetCoverAsync(id);
-        return result is null ? NotFound() : Ok(result);
+        var cover = await _coversService.GetCoverAsync(id);
+        return cover is null ? NotFound() : Ok(CoverMapper.ToDto(cover));
     }
 
     /// <summary>
@@ -64,8 +65,8 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CoverDto>> CreateAsync(CreateCoverRequest request)
     {
-        var result = await _coversService.CreateCoverAsync(request);
-        return Ok(result);
+        var cover = await _coversService.CreateCoverAsync(request);
+        return Ok(CoverMapper.ToDto(cover));
     }
 
     /// <summary>
