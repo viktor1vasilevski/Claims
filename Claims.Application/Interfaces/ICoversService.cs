@@ -6,7 +6,7 @@ namespace Claims.Application.Interfaces;
 
 public interface ICoversService
 {
-    Task<IEnumerable<CoverDto>> GetCoversAsync();
+    Task<IReadOnlyList<CoverDto>> GetCoversAsync();
     Task<CoverDto?> GetCoverAsync(string id);
     Task<CoverDto> CreateCoverAsync(CreateCoverRequest request);
     Task DeleteCoverAsync(string id);

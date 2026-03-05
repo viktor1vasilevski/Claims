@@ -10,7 +10,7 @@ namespace Claims.Application.Services;
 public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _auditService, 
     ICoversRepository _coversRepository) : IClaimsService
 {
-    public async Task<List<ClaimDto>> GetClaimsAsync()
+    public async Task<IReadOnlyList<ClaimDto>> GetClaimsAsync()
     {
         var claims = await _claimsRepository.GetClaimsAsync();
         return claims.Select(ClaimMapper.ToDto).ToList();

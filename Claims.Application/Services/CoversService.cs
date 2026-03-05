@@ -10,10 +10,10 @@ namespace Claims.Application.Services;
 
 public class CoversService(ICoversRepository _coversRepository, IAuditService _auditService) : ICoversService
 {
-    public async Task<IEnumerable<CoverDto>> GetCoversAsync()
+    public async Task<IReadOnlyList<CoverDto>> GetCoversAsync()
     {
         var covers = await _coversRepository.GetCoversAsync();
-        return covers.Select(CoverMapper.ToDto);
+        return covers.Select(CoverMapper.ToDto).ToList();
     }
 
     public async Task<CoverDto?> GetCoverAsync(string id)
