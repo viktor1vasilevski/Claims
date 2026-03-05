@@ -1,8 +1,8 @@
 using Claims.Api.Extensions;
+using Claims.Api.Middlewares;
 using Claims.Application.Extensions;
 using Claims.Infrastructure.Context;
 using Claims.Infrastructure.Extensions;
-using Claims.Middleware;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
