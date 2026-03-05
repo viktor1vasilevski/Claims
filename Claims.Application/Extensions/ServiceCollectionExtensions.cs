@@ -1,7 +1,9 @@
 ﻿using Claims.Application.Channels;
 using Claims.Application.Interfaces;
 using Claims.Application.Services;
+using Claims.Application.Strategies;
 using Claims.Application.Validations.Claims;
+using Claims.Domain.Enums;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,6 +17,12 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICoversService, CoversService>();
         services.AddScoped<IAuditService, AuditService>();
         services.AddScoped<IPremiumCalculator, PremiumCalculator>();
+
+        services.AddSingleton<ICoverRatePolicy, YachtRatePolicy>();
+        services.AddSingleton<ICoverRatePolicy, PassengerShipRatePolicy>();
+        services.AddSingleton<ICoverRatePolicy, TankerRatePolicy>();
+        services.AddSingleton<ICoverRatePolicy>(_ => new DefaultRatePolicy(CoverType.ContainerShip));
+        services.AddSingleton<ICoverRatePolicy>(_ => new DefaultRatePolicy(CoverType.BulkCarrier));
 
         services.AddValidatorsFromAssemblyContaining<CreateClaimRequestValidator>(ServiceLifetime.Transient);
 

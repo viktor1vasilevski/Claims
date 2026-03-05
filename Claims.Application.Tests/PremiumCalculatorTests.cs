@@ -1,4 +1,5 @@
 ﻿using Claims.Application.Services;
+using Claims.Application.Strategies;
 using Claims.Domain.Enums;
 using FluentAssertions;
 
@@ -6,7 +7,14 @@ namespace Claims.Application.Tests;
 
 public class PremiumCalculatorTests
 {
-    private readonly PremiumCalculator _sut = new();
+    private readonly PremiumCalculator _sut = new(
+    [
+        new YachtRatePolicy(),
+        new PassengerShipRatePolicy(),
+        new TankerRatePolicy(),
+        new DefaultRatePolicy(CoverType.ContainerShip),
+        new DefaultRatePolicy(CoverType.BulkCarrier)
+    ]);
 
     [Theory]
     [InlineData(CoverType.Yacht, 30, 41250)]
