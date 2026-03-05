@@ -24,7 +24,7 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     [ProducesResponseType(typeof(decimal), StatusCodes.Status200OK)]
     public ActionResult ComputePremium(DateTime startDate, DateTime endDate, CoverType coverType)
     {
-        var result = _coversService.ComputePremium(startDate, endDate, coverType);
+        var result = _coversService.ComputePremiumAsync(startDate, endDate, coverType);
         return Ok(result);
     }
 

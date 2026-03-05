@@ -10,5 +10,5 @@ public interface ICoversService
     Task<CoverDto?> GetCoverAsync(string id);
     Task<CoverDto> CreateCoverAsync(CreateCoverRequest request);
     Task DeleteCoverAsync(string id);
-    decimal ComputePremium(DateTime startDate, DateTime endDate, CoverType coverType);
+    Task<decimal> ComputePremiumAsync(DateTime startDate, DateTime endDate, CoverType coverType);
 }

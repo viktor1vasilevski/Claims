@@ -1,5 +1,4 @@
-﻿using Claims.Application.Constants;
-using Claims.Application.DTOs;
+﻿using Claims.Application.DTOs;
 using Claims.Application.Interfaces;
 using Claims.Application.Mappers;
 using Claims.Application.Requests.Cover;
@@ -9,7 +8,8 @@ using Claims.Domain.Models;
 
 namespace Claims.Application.Services;
 
-public class CoversService(ICoversRepository _coversRepository, IAuditService _auditService) : ICoversService
+public class CoversService(ICoversRepository _coversRepository, IAuditService _auditService,
+    IPremiumCalculator _premiumCalculator) : ICoversService
 {
     public async Task<IReadOnlyList<CoverDto>> GetCoversAsync()
     {
@@ -31,7 +31,7 @@ public class CoversService(ICoversRepository _coversRepository, IAuditService _a
             StartDate = request.StartDate,
             EndDate = request.EndDate,
             Type = request.Type,
-            Premium = ComputePremium(request.StartDate, request.EndDate, request.Type)
+            Premium = await _premiumCalculator.ComputeAsync(request.StartDate, request.EndDate, request.Type)
         };
         await _coversRepository.CreateCoverAsync(cover);
         await _auditService.AuditCoverAsync(cover.Id, "POST");
@@ -44,37 +44,6 @@ public class CoversService(ICoversRepository _coversRepository, IAuditService _a
         await _auditService.AuditCoverAsync(id, "DELETE");
     }
 
-    public decimal ComputePremium(DateTime startDate, DateTime endDate, CoverType coverType)
-    {
-        var multiplier = coverType switch
-        {
-            CoverType.Yacht => PremiumConstants.YachtMultiplier,
-            CoverType.PassengerShip => PremiumConstants.PassengerShipMultiplier,
-            CoverType.Tanker => PremiumConstants.TankerMultiplier,
-            _ => PremiumConstants.DefaultMultiplier
-        };
-
-        var premiumPerDay = PremiumConstants.BaseDayRate * multiplier;
-        var insuranceLength = (endDate - startDate).TotalDays;
-        var totalPremium = 0m;
-
-        for (var i = 0; i < insuranceLength; i++)
-        {
-            if (i < PremiumConstants.FirstPeriodDays)
-            {
-                totalPremium += premiumPerDay;
-            }
-            else if (i < PremiumConstants.SecondPeriodDays)
-            {
-                var discount = coverType == CoverType.Yacht ? PremiumConstants.YachtFirstDiscount : PremiumConstants.DefaultFirstDiscount;
-                totalPremium += premiumPerDay - premiumPerDay * discount;
-            }
-            else
-            {
-                var discount = coverType == CoverType.Yacht ? PremiumConstants.YachtSecondDiscount : PremiumConstants.DefaultSecondDiscount;
-                totalPremium += premiumPerDay - premiumPerDay * discount;
-            }
-        }
-        return totalPremium;
-    }
+    public Task<decimal> ComputePremiumAsync(DateTime startDate, DateTime endDate, CoverType coverType)
+        => _premiumCalculator.ComputeAsync(startDate, endDate, coverType);
 }

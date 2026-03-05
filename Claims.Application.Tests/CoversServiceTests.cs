@@ -13,13 +13,19 @@ public class CoversServiceTests
 {
     private readonly Mock<ICoversRepository> _coversRepositoryMock = new();
     private readonly Mock<IAuditService> _auditServiceMock = new();
+    private readonly Mock<IPremiumCalculator> _premiumCalculatorMock = new();
     private readonly CoversService _sut;
 
     public CoversServiceTests()
     {
         _sut = new CoversService(
             _coversRepositoryMock.Object,
-            _auditServiceMock.Object);
+            _auditServiceMock.Object,
+            _premiumCalculatorMock.Object);
+
+        _premiumCalculatorMock
+            .Setup(x => x.ComputeAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CoverType>()))
+            .ReturnsAsync(50000m);
     }
 
     [Fact]
@@ -85,7 +91,7 @@ public class CoversServiceTests
         // Assert
         result.Should().NotBeNull();
         result.Type.Should().Be(CoverType.Yacht);
-        result.Premium.Should().BeGreaterThan(0);
+        result.Premium.Should().Be(50000m);
         _coversRepositoryMock.Verify(x => x.CreateCoverAsync(It.IsAny<Cover>()), Times.Once);
         _auditServiceMock.Verify(x => x.AuditCoverAsync(It.IsAny<string>(), "POST"), Times.Once);
     }
@@ -102,22 +108,5 @@ public class CoversServiceTests
         // Assert
         _coversRepositoryMock.Verify(x => x.DeleteCoverAsync("1"), Times.Once);
         _auditServiceMock.Verify(x => x.AuditCoverAsync("1", "DELETE"), Times.Once);
-    }
-
-    [Theory]
-    [InlineData(CoverType.Yacht, 30, 41250)]
-    [InlineData(CoverType.Tanker, 30, 56250)]
-    [InlineData(CoverType.PassengerShip, 30, 45000)]
-    public void ComputePremium_ShouldReturnCorrectPremium(CoverType coverType, int days, decimal expectedPremium)
-    {
-        // Arrange
-        var startDate = new DateTime(2026, 1, 1);
-        var endDate = startDate.AddDays(days);
-
-        // Act
-        var result = _sut.ComputePremium(startDate, endDate, coverType);
-
-        // Assert
-        result.Should().Be(expectedPremium);
     }
 }
