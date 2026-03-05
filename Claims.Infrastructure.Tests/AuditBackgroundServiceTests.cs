@@ -1,4 +1,5 @@
 ﻿using Claims.Application.Channels;
+using Claims.Domain.Enums;
 using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
 using Claims.Infrastructure.BackgroundServices;
@@ -33,7 +34,7 @@ public class AuditBackgroundServiceTests
 
         // Act
         var task = sut.StartAsync(cts.Token);
-        await _auditChannel.Writer.WriteAsync(new AuditMessage("123", "POST", "Claim"));
+        await _auditChannel.Writer.WriteAsync(new AuditMessage("123", "POST", AuditEntityType.Claim));
         await Task.Delay(100);
         await cts.CancelAsync();
 
@@ -51,7 +52,7 @@ public class AuditBackgroundServiceTests
 
         // Act
         var task = sut.StartAsync(cts.Token);
-        await _auditChannel.Writer.WriteAsync(new AuditMessage("456", "DELETE", "Cover"));
+        await _auditChannel.Writer.WriteAsync(new AuditMessage("456", "DELETE", AuditEntityType.Cover));
         await Task.Delay(100);
         await cts.CancelAsync();
 

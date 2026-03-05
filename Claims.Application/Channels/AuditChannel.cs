@@ -1,8 +1,9 @@
-﻿using System.Threading.Channels;
+﻿using Claims.Domain.Enums;
+using System.Threading.Channels;
 
 namespace Claims.Application.Channels;
 
-public record AuditMessage(string Id, string HttpRequestType, string EntityType);
+public record AuditMessage(string Id, string HttpRequestType, AuditEntityType EntityType);
 
 public class AuditChannel
 {

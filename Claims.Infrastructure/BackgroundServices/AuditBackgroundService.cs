@@ -1,4 +1,5 @@
 ﻿using Claims.Application.Channels;
+using Claims.Domain.Enums;
 using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,14 +22,14 @@ public class AuditBackgroundService(
                 using var scope = _scopeFactory.CreateScope();
                 var auditRepository = scope.ServiceProvider.GetRequiredService<IAuditRepository>();
 
-                if (message.EntityType == "Claim")
+                if (message.EntityType == AuditEntityType.Claim)
                     await auditRepository.AddClaimAuditAsync(new ClaimAudit
                     {
                         ClaimId = message.Id,
                         Created = DateTime.UtcNow,
                         HttpRequestType = message.HttpRequestType
                     });
-                else if (message.EntityType == "Cover")
+                else if (message.EntityType == AuditEntityType.Cover)
                     await auditRepository.AddCoverAuditAsync(new CoverAudit
                     {
                         CoverId = message.Id,
