@@ -137,7 +137,7 @@ public class ClaimsServiceTests
         result.Should().NotBeNull();
         result.CoverId.Should().Be("c1");
         _claimsRepositoryMock.Verify(x => x.CreateClaimAsync(It.IsAny<Claim>()), Times.Once);
-        _auditServiceMock.Verify(x => x.AuditClaimAsync(It.IsAny<string>(), "POST"), Times.Once);
+        _auditServiceMock.Verify(x => x.AuditClaimAsync(It.IsAny<string>(), HttpRequestType.Post), Times.Once);
     }
 
     [Fact]
@@ -151,6 +151,6 @@ public class ClaimsServiceTests
 
         // Assert
         _claimsRepositoryMock.Verify(x => x.DeleteClaimAsync("1"), Times.Once);
-        _auditServiceMock.Verify(x => x.AuditClaimAsync("1", "DELETE"), Times.Once);
+        _auditServiceMock.Verify(x => x.AuditClaimAsync("1", HttpRequestType.Delete), Times.Once);
     }
 }

@@ -1,7 +1,6 @@
-﻿using Claims.Application.DTOs;
-using Claims.Application.Interfaces;
-using Claims.Application.Mappers;
+﻿using Claims.Application.Interfaces;
 using Claims.Application.Requests.Claims;
+using Claims.Domain.Enums;
 using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
 
@@ -10,19 +9,17 @@ namespace Claims.Application.Services;
 public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _auditService, 
     ICoversRepository _coversRepository) : IClaimsService
 {
-    public async Task<IReadOnlyList<ClaimDto>> GetClaimsAsync()
+    public async Task<IReadOnlyList<Claim>> GetClaimsAsync()
     {
-        var claims = await _claimsRepository.GetClaimsAsync();
-        return claims.Select(ClaimMapper.ToDto).ToList();
+        return await _claimsRepository.GetClaimsAsync();
     }
 
-    public async Task<ClaimDto?> GetClaimAsync(string id)
+    public Task<Claim?> GetClaimAsync(string id)
     {
-        var claim = await _claimsRepository.GetClaimAsync(id);
-        return claim is null ? null : ClaimMapper.ToDto(claim);
+        return _claimsRepository.GetClaimAsync(id);
     }
 
-    public async Task<ClaimDto> CreateClaimAsync(CreateClaimRequest request)
+    public async Task<Claim> CreateClaimAsync(CreateClaimRequest request)
     {
         var cover = await _coversRepository.GetCoverAsync(request.CoverId);
         if (cover is null)
@@ -42,14 +39,14 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
         };
 
         await _claimsRepository.CreateClaimAsync(claim);
-        await _auditService.AuditClaimAsync(claim.Id, "POST");
+        await _auditService.AuditClaimAsync(claim.Id, HttpRequestType.Post);
 
-        return ClaimMapper.ToDto(claim);
+        return claim;
     }
 
     public async Task DeleteClaimAsync(string id)
     {
         await _claimsRepository.DeleteClaimAsync(id);
-        await _auditService.AuditClaimAsync(id, "DELETE");
+        await _auditService.AuditClaimAsync(id, HttpRequestType.Delete);
     }
 }

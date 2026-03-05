@@ -3,7 +3,7 @@ using System.Threading.Channels;
 
 namespace Claims.Application.Channels;
 
-public record AuditMessage(string Id, string HttpRequestType, AuditEntityType EntityType);
+public record AuditMessage(string Id, HttpRequestType HttpRequestType, AuditEntityType EntityType);
 
 public class AuditChannel
 {
