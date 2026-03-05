@@ -11,7 +11,7 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
 {
     public async Task<IReadOnlyList<Claim>> GetClaimsAsync()
     {
-        return await _claimsRepository.GetClaimsAsync();
+        return (await _claimsRepository.GetClaimsAsync()).ToList();
     }
 
     public Task<Claim?> GetClaimAsync(string id)

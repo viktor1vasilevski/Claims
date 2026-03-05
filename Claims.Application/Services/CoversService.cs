@@ -11,7 +11,7 @@ public class CoversService(ICoversRepository _coversRepository, IAuditService _a
 {
     public async Task<IReadOnlyList<Cover>> GetCoversAsync()
     {
-        return await _coversRepository.GetCoversAsync();
+        return (await _coversRepository.GetCoversAsync()).ToList();
     }
 
     public Task<Cover?> GetCoverAsync(string id)
