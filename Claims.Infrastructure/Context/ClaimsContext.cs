@@ -12,7 +12,16 @@ public class ClaimsContext(DbContextOptions options) : DbContext(options)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Claim>().ToCollection("claims");
         modelBuilder.Entity<Cover>().ToCollection("covers");
+
+        modelBuilder.Entity<Cover>()
+            .Property(x => x.Type)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Claim>()
+            .Property(x => x.Type)
+            .HasConversion<string>();
     }
 }

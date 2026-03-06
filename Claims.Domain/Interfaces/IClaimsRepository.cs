@@ -8,4 +8,5 @@ public interface IClaimsRepository
     Task<Claim?> GetClaimAsync(string id);
     Task CreateClaimAsync(Claim claim);
     Task DeleteClaimAsync(string id);
+    Task<IEnumerable<Claim>> GetClaimsByCoverIdAsync(string coverId);
 }

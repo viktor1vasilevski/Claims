@@ -6,8 +6,8 @@ using Claims.Domain.Models;
 
 namespace Claims.Application.Services;
 
-public class CoversService(ICoversRepository _coversRepository, IAuditService _auditService,
-    IPremiumCalculator _premiumCalculator) : ICoversService
+public class CoversService(ICoversRepository _coversRepository, IClaimsRepository _claimsRepository, 
+    IAuditService _auditService, IPremiumCalculator _premiumCalculator) : ICoversService
 {
     public async Task<IReadOnlyList<Cover>> GetCoversAsync()
     {
@@ -39,6 +39,10 @@ public class CoversService(ICoversRepository _coversRepository, IAuditService _a
 
     public async Task DeleteCoverAsync(string id)
     {
+        var claims = await _claimsRepository.GetClaimsByCoverIdAsync(id);
+        if (claims.Any())
+            throw new InvalidOperationException("Cannot delete a cover that has active claims.");
+
         await _coversRepository.DeleteCoverAsync(id);
         await _auditService.AuditCoverAsync(id, HttpRequestType.DELETE);
     }

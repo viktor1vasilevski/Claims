@@ -28,4 +28,7 @@ public class ClaimsRepository(ClaimsContext _context) : IClaimsRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    public async Task<IEnumerable<Claim>> GetClaimsByCoverIdAsync(string coverId)
+        => await _context.Claims.Where(c => c.CoverId == coverId).ToListAsync();
 }
