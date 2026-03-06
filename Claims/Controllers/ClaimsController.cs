@@ -1,7 +1,8 @@
-using Claims.Application.DTOs;
 using Claims.Application.Interfaces;
 using Claims.Application.Requests.Claims;
+using Claims.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Claims.Api.Mappers;
 
 namespace Claims.Controllers;
 
@@ -20,8 +21,8 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<ClaimDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<ClaimDto>>> GetAsync()
     {
-        var result = await _claimsService.GetClaimsAsync();
-        return Ok(result);
+        var claims = await _claimsService.GetClaimsAsync();
+        return Ok(claims.Select(ClaimMapper.ToDto));
     }
 
     /// <summary>
@@ -34,8 +35,8 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ClaimDto>> CreateAsync(CreateClaimRequest request)
     {
-        var result = await _claimsService.CreateClaimAsync(request);
-        return Ok(result);
+        var claim = await _claimsService.CreateClaimAsync(request);
+        return Ok(ClaimMapper.ToDto(claim));
     }
 
     /// <summary>
@@ -61,7 +62,7 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ClaimDto>> GetAsync(string id)
     {
-        var result = await _claimsService.GetClaimAsync(id);
-        return result is null ? NotFound() : Ok(result);
+        var claim = await _claimsService.GetClaimAsync(id);
+        return claim is null ? NotFound() : Ok(ClaimMapper.ToDto(claim));
     }
 }

@@ -1,6 +1,4 @@
-﻿using Claims.Application.DTOs;
-using Claims.Application.Interfaces;
-using Claims.Application.Mappers;
+﻿using Claims.Application.Interfaces;
 using Claims.Application.Requests.Cover;
 using Claims.Domain.Enums;
 using Claims.Domain.Interfaces;
@@ -11,19 +9,18 @@ namespace Claims.Application.Services;
 public class CoversService(ICoversRepository _coversRepository, IAuditService _auditService,
     IPremiumCalculator _premiumCalculator) : ICoversService
 {
-    public async Task<IReadOnlyList<CoverDto>> GetCoversAsync()
+    public async Task<IReadOnlyList<Cover>> GetCoversAsync()
     {
         var covers = await _coversRepository.GetCoversAsync();
-        return covers.Select(CoverMapper.ToDto).ToList();
+        return covers.ToList();
     }
 
-    public async Task<CoverDto?> GetCoverAsync(string id)
+    public async Task<Cover?> GetCoverAsync(string id)
     {
-        var cover = await _coversRepository.GetCoverAsync(id);
-        return cover is null ? null : CoverMapper.ToDto(cover);
+        return await _coversRepository.GetCoverAsync(id);
     }
 
-    public async Task<CoverDto> CreateCoverAsync(CreateCoverRequest request)
+    public async Task<Cover> CreateCoverAsync(CreateCoverRequest request)
     {
         var cover = new Cover
         {
@@ -33,9 +30,11 @@ public class CoversService(ICoversRepository _coversRepository, IAuditService _a
             Type = request.Type,
             Premium = await _premiumCalculator.ComputeAsync(request.StartDate, request.EndDate, request.Type)
         };
+
         await _coversRepository.CreateCoverAsync(cover);
         await _auditService.AuditCoverAsync(cover.Id, "POST");
-        return CoverMapper.ToDto(cover);
+
+        return cover;
     }
 
     public async Task DeleteCoverAsync(string id)

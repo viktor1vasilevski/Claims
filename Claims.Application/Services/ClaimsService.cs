@@ -1,6 +1,4 @@
-﻿using Claims.Application.DTOs;
-using Claims.Application.Interfaces;
-using Claims.Application.Mappers;
+﻿using Claims.Application.Interfaces;
 using Claims.Application.Requests.Claims;
 using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
@@ -10,19 +8,18 @@ namespace Claims.Application.Services;
 public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _auditService, 
     ICoversRepository _coversRepository) : IClaimsService
 {
-    public async Task<IReadOnlyList<ClaimDto>> GetClaimsAsync()
+    public async Task<IReadOnlyList<Claim>> GetClaimsAsync()
     {
         var claims = await _claimsRepository.GetClaimsAsync();
-        return claims.Select(ClaimMapper.ToDto).ToList();
+        return claims.ToList();
     }
 
-    public async Task<ClaimDto?> GetClaimAsync(string id)
+    public async Task<Claim?> GetClaimAsync(string id)
     {
-        var claim = await _claimsRepository.GetClaimAsync(id);
-        return claim is null ? null : ClaimMapper.ToDto(claim);
+        return await _claimsRepository.GetClaimAsync(id);
     }
 
-    public async Task<ClaimDto> CreateClaimAsync(CreateClaimRequest request)
+    public async Task<Claim> CreateClaimAsync(CreateClaimRequest request)
     {
         var cover = await _coversRepository.GetCoverAsync(request.CoverId);
         if (cover is null)
@@ -44,7 +41,7 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
         await _claimsRepository.CreateClaimAsync(claim);
         await _auditService.AuditClaimAsync(claim.Id, "POST");
 
-        return ClaimMapper.ToDto(claim);
+        return claim;
     }
 
     public async Task DeleteClaimAsync(string id)
