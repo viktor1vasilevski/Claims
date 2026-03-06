@@ -93,7 +93,7 @@ public class CoversServiceTests
         result.Type.Should().Be(CoverType.Yacht);
         result.Premium.Should().Be(50000m);
         _coversRepositoryMock.Verify(x => x.CreateCoverAsync(It.IsAny<Cover>()), Times.Once);
-        _auditServiceMock.Verify(x => x.AuditCoverAsync(It.IsAny<string>(), "POST"), Times.Once);
+        _auditServiceMock.Verify(x => x.AuditCoverAsync(It.IsAny<string>(), HttpRequestType.POST), Times.Once);
     }
 
     [Fact]
@@ -107,6 +107,6 @@ public class CoversServiceTests
 
         // Assert
         _coversRepositoryMock.Verify(x => x.DeleteCoverAsync("1"), Times.Once);
-        _auditServiceMock.Verify(x => x.AuditCoverAsync("1", "DELETE"), Times.Once);
+        _auditServiceMock.Verify(x => x.AuditCoverAsync("1", HttpRequestType.DELETE), Times.Once);
     }
 }

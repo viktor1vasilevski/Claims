@@ -1,5 +1,6 @@
 ﻿using Claims.Application.Interfaces;
 using Claims.Application.Requests.Claims;
+using Claims.Domain.Enums;
 using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
 
@@ -39,7 +40,7 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
         };
 
         await _claimsRepository.CreateClaimAsync(claim);
-        await _auditService.AuditClaimAsync(claim.Id, "POST");
+        await _auditService.AuditClaimAsync(claim.Id, HttpRequestType.POST);
 
         return claim;
     }
@@ -47,6 +48,6 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
     public async Task DeleteClaimAsync(string id)
     {
         await _claimsRepository.DeleteClaimAsync(id);
-        await _auditService.AuditClaimAsync(id, "DELETE");
+        await _auditService.AuditClaimAsync(id, HttpRequestType.DELETE);
     }
 }

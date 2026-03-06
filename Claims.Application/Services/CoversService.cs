@@ -32,7 +32,7 @@ public class CoversService(ICoversRepository _coversRepository, IAuditService _a
         };
 
         await _coversRepository.CreateCoverAsync(cover);
-        await _auditService.AuditCoverAsync(cover.Id, "POST");
+        await _auditService.AuditCoverAsync(cover.Id, HttpRequestType.POST);
 
         return cover;
     }
@@ -40,7 +40,7 @@ public class CoversService(ICoversRepository _coversRepository, IAuditService _a
     public async Task DeleteCoverAsync(string id)
     {
         await _coversRepository.DeleteCoverAsync(id);
-        await _auditService.AuditCoverAsync(id, "DELETE");
+        await _auditService.AuditCoverAsync(id, HttpRequestType.DELETE);
     }
 
     public Task<decimal> ComputePremiumAsync(DateTime startDate, DateTime endDate, CoverType coverType)

@@ -34,13 +34,13 @@ public class AuditBackgroundServiceTests
 
         // Act
         var task = sut.StartAsync(cts.Token);
-        await _auditChannel.Writer.WriteAsync(new AuditMessage("123", "POST", AuditEntityType.Claim));
+        await _auditChannel.Writer.WriteAsync(new AuditMessage("123", HttpRequestType.POST, AuditEntityType.Claim));
         await Task.Delay(100);
         await cts.CancelAsync();
 
         // Assert
         _auditRepositoryMock.Verify(x => x.AddClaimAuditAsync(It.Is<ClaimAudit>(
-            a => a.ClaimId == "123" && a.HttpRequestType == "POST")), Times.Once);
+            a => a.ClaimId == "123" && a.HttpRequestType == HttpRequestType.POST)), Times.Once);
     }
 
     [Fact]
@@ -52,12 +52,12 @@ public class AuditBackgroundServiceTests
 
         // Act
         var task = sut.StartAsync(cts.Token);
-        await _auditChannel.Writer.WriteAsync(new AuditMessage("456", "DELETE", AuditEntityType.Cover));
+        await _auditChannel.Writer.WriteAsync(new AuditMessage("456", HttpRequestType.DELETE, AuditEntityType.Cover));
         await Task.Delay(100);
         await cts.CancelAsync();
 
         // Assert
         _auditRepositoryMock.Verify(x => x.AddCoverAuditAsync(It.Is<CoverAudit>(
-            a => a.CoverId == "456" && a.HttpRequestType == "DELETE")), Times.Once);
+            a => a.CoverId == "456" && a.HttpRequestType == HttpRequestType.DELETE)), Times.Once);
     }
 }

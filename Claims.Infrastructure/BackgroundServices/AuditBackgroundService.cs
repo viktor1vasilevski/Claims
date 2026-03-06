@@ -21,21 +21,7 @@ public class AuditBackgroundService(
             {
                 using var scope = _scopeFactory.CreateScope();
                 var auditRepository = scope.ServiceProvider.GetRequiredService<IAuditRepository>();
-
-                if (message.EntityType == AuditEntityType.Claim)
-                    await auditRepository.AddClaimAuditAsync(new ClaimAudit
-                    {
-                        ClaimId = message.Id,
-                        Created = DateTime.UtcNow,
-                        HttpRequestType = message.HttpRequestType
-                    });
-                else if (message.EntityType == AuditEntityType.Cover)
-                    await auditRepository.AddCoverAuditAsync(new CoverAudit
-                    {
-                        CoverId = message.Id,
-                        Created = DateTime.UtcNow,
-                        HttpRequestType = message.HttpRequestType
-                    });
+                await ProcessAuditMessageAsync(auditRepository, message);
             }
             catch (Exception ex)
             {
@@ -44,4 +30,23 @@ public class AuditBackgroundService(
             }
         }
     }
+
+    private static Task ProcessAuditMessageAsync(IAuditRepository auditRepository, AuditMessage message)
+    => message.EntityType switch
+    {
+        AuditEntityType.Claim => auditRepository.AddClaimAuditAsync(new ClaimAudit
+        {
+            ClaimId = message.Id,
+            Created = DateTime.UtcNow,
+            HttpRequestType = message.HttpRequestType
+        }),
+        AuditEntityType.Cover => auditRepository.AddCoverAuditAsync(new CoverAudit
+        {
+            CoverId = message.Id,
+            Created = DateTime.UtcNow,
+            HttpRequestType = message.HttpRequestType
+        }),
+        _ => throw new ArgumentOutOfRangeException(nameof(message.EntityType),
+            $"Unhandled audit entity type: {message.EntityType}")
+    };
 }   
