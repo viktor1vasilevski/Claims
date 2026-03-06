@@ -42,6 +42,12 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> _logger) : I
                 message = ex.Message;
                 break;
 
+            case UnhandledAuditEntityTypeException ex:
+                _logger.LogError(ex, "Unhandled audit entity type: {Message}", ex.Message);
+                statusCode = StatusCodes.Status500InternalServerError;
+                message = ex.Message;
+                break;
+
             case ArgumentException ex:
                 _logger.LogWarning(ex, "Validation failed: {Message}", ex.Message);
                 statusCode = StatusCodes.Status400BadRequest;
