@@ -1,4 +1,5 @@
 ﻿using Claims.Application.Channels;
+using Claims.Application.Interfaces;
 using Claims.Domain.Enums;
 using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
@@ -14,6 +15,7 @@ public class AuditBackgroundServiceTests
     private readonly Mock<IAuditRepository> _auditRepositoryMock = new();
     private readonly Mock<ILogger<AuditBackgroundService>> _loggerMock = new();
     private readonly AuditChannel _auditChannel = new();
+    private readonly Mock<IAuditMessageProcessor> _processorMock = new();
 
     private AuditBackgroundService CreateSut()
     {
@@ -22,7 +24,7 @@ public class AuditBackgroundServiceTests
 
         var scopeFactory = services.BuildServiceProvider().GetRequiredService<IServiceScopeFactory>();
 
-        return new AuditBackgroundService(_auditChannel, scopeFactory, _loggerMock.Object);
+        return new AuditBackgroundService(_auditChannel, scopeFactory, _processorMock.Object, _loggerMock.Object);
     }
 
     [Fact]
@@ -39,8 +41,10 @@ public class AuditBackgroundServiceTests
         await cts.CancelAsync();
 
         // Assert
-        _auditRepositoryMock.Verify(x => x.AddClaimAuditAsync(It.Is<ClaimAudit>(
-            a => a.ClaimId == "123" && a.HttpRequestType == HttpRequestType.POST)), Times.Once);
+        _processorMock.Verify(x => x.ProcessAsync(
+            It.IsAny<IAuditRepository>(),
+            It.Is<AuditMessage>(m => m.Id == "123" && m.HttpRequestType == HttpRequestType.POST && m.EntityType == AuditEntityType.Claim)),
+            Times.Once);
     }
 
     [Fact]
@@ -57,7 +61,9 @@ public class AuditBackgroundServiceTests
         await cts.CancelAsync();
 
         // Assert
-        _auditRepositoryMock.Verify(x => x.AddCoverAuditAsync(It.Is<CoverAudit>(
-            a => a.CoverId == "456" && a.HttpRequestType == HttpRequestType.DELETE)), Times.Once);
+        _processorMock.Verify(x => x.ProcessAsync(
+            It.IsAny<IAuditRepository>(),
+            It.Is<AuditMessage>(m => m.Id == "456" && m.HttpRequestType == HttpRequestType.DELETE && m.EntityType == AuditEntityType.Cover)),
+            Times.Once);
     }
 }

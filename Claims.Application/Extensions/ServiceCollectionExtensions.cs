@@ -14,6 +14,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IClaimsService, ClaimsService>();
         services.AddScoped<ICoversService, CoversService>();
         services.AddScoped<IAuditService, AuditService>();
+        services.AddSingleton<IAuditMessageProcessor, AuditMessageProcessor>();
 
         services.AddValidatorsFromAssemblyContaining<CreateClaimRequestValidator>(ServiceLifetime.Transient);
 

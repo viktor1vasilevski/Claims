@@ -1,17 +1,14 @@
 ﻿using Claims.Application.Channels;
-using Claims.Domain.Enums;
+using Claims.Application.Interfaces;
 using Claims.Domain.Interfaces;
-using Claims.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Claims.Infrastructure.BackgroundServices;
 
-public class AuditBackgroundService(
-    AuditChannel _auditChannel,
-    IServiceScopeFactory _scopeFactory,
-    ILogger<AuditBackgroundService> _logger) : BackgroundService
+public class AuditBackgroundService(AuditChannel _auditChannel, IServiceScopeFactory _scopeFactory,
+    IAuditMessageProcessor _processor, ILogger<AuditBackgroundService> _logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -21,7 +18,7 @@ public class AuditBackgroundService(
             {
                 using var scope = _scopeFactory.CreateScope();
                 var auditRepository = scope.ServiceProvider.GetRequiredService<IAuditRepository>();
-                await ProcessAuditMessageAsync(auditRepository, message);
+                await _processor.ProcessAsync(auditRepository, message);
             }
             catch (Exception ex)
             {
@@ -30,23 +27,4 @@ public class AuditBackgroundService(
             }
         }
     }
-
-    private static Task ProcessAuditMessageAsync(IAuditRepository auditRepository, AuditMessage message)
-    => message.EntityType switch
-    {
-        AuditEntityType.Claim => auditRepository.AddClaimAuditAsync(new ClaimAudit
-        {
-            ClaimId = message.Id,
-            Created = DateTime.UtcNow,
-            HttpRequestType = message.HttpRequestType
-        }),
-        AuditEntityType.Cover => auditRepository.AddCoverAuditAsync(new CoverAudit
-        {
-            CoverId = message.Id,
-            Created = DateTime.UtcNow,
-            HttpRequestType = message.HttpRequestType
-        }),
-        _ => throw new ArgumentOutOfRangeException(nameof(message.EntityType),
-            $"Unhandled audit entity type: {message.EntityType}")
-    };
-}   
+}
