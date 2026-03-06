@@ -1,6 +1,7 @@
 ﻿using Claims.Application.Interfaces;
 using Claims.Application.Requests.Claims;
 using Claims.Domain.Enums;
+using Claims.Domain.Exceptions;
 using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
 
@@ -24,10 +25,10 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
     {
         var cover = await _coversRepository.GetCoverAsync(request.CoverId);
         if (cover is null)
-            throw new ArgumentException("Cover not found.");
+            throw new CoverNotFoundException(request.CoverId);
 
         if (request.Created < cover.StartDate || request.Created > cover.EndDate)
-            throw new ArgumentException("Created date must be within the Cover period.");
+            throw new ClaimDateOutOfRangeException();
 
         var claim = new Claim
         {

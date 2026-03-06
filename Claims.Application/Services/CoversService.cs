@@ -1,6 +1,7 @@
 ﻿using Claims.Application.Interfaces;
 using Claims.Application.Requests.Cover;
 using Claims.Domain.Enums;
+using Claims.Domain.Exceptions;
 using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
 
@@ -41,7 +42,7 @@ public class CoversService(ICoversRepository _coversRepository, IClaimsRepositor
     {
         var claims = await _claimsRepository.GetClaimsByCoverIdAsync(id);
         if (claims.Any())
-            throw new InvalidOperationException("Cannot delete a cover that has active claims.");
+            throw new CoverHasActiveClaimsException(id);
 
         await _coversRepository.DeleteCoverAsync(id);
         await _auditService.AuditCoverAsync(id, HttpRequestType.DELETE);

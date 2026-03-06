@@ -14,12 +14,14 @@ public class CoversServiceTests
     private readonly Mock<ICoversRepository> _coversRepositoryMock = new();
     private readonly Mock<IAuditService> _auditServiceMock = new();
     private readonly Mock<IPremiumCalculator> _premiumCalculatorMock = new();
+    private readonly Mock<IClaimsRepository> _claimRepositoryMock = new();
     private readonly CoversService _sut;
 
     public CoversServiceTests()
     {
         _sut = new CoversService(
             _coversRepositoryMock.Object,
+            _claimRepositoryMock.Object,
             _auditServiceMock.Object,
             _premiumCalculatorMock.Object);
 

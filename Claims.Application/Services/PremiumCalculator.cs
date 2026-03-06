@@ -1,6 +1,7 @@
 ﻿using Claims.Application.Constants;
 using Claims.Application.Interfaces;
 using Claims.Domain.Enums;
+using Claims.Domain.Exceptions;
 
 namespace Claims.Application.Services;
 
@@ -9,7 +10,7 @@ public class PremiumCalculator(IEnumerable<IPremiumRateStrategy> _strategies) : 
     public Task<decimal> ComputeAsync(DateTime startDate, DateTime endDate, CoverType coverType)
     {
         var strategy = _strategies.FirstOrDefault(s => s.CoverType == coverType)
-            ?? throw new ArgumentException($"No premium strategy found for cover type {coverType}.");
+            ?? throw new PremiumStrategyNotFoundException(coverType);
 
         var premiumPerDay = PremiumConstants.BaseDayRate * strategy.GetMultiplier();
         var insuranceLength = (int)(endDate - startDate).TotalDays;

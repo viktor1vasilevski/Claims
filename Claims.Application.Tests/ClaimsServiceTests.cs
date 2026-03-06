@@ -2,6 +2,7 @@
 using Claims.Application.Requests.Claims;
 using Claims.Application.Services;
 using Claims.Domain.Enums;
+using Claims.Domain.Exceptions;
 using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
 using FluentAssertions;
@@ -81,8 +82,8 @@ public class ClaimsServiceTests
         var act = async () => await _sut.CreateClaimAsync(request);
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentException>()
-            .WithMessage("Cover not found.");
+        await act.Should().ThrowAsync<CoverNotFoundException>()
+            .WithMessage("Cover with id 'c1' was not found.");
     }
 
     [Fact]
@@ -106,7 +107,7 @@ public class ClaimsServiceTests
         var act = async () => await _sut.CreateClaimAsync(request);
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentException>()
+        await act.Should().ThrowAsync<ClaimDateOutOfRangeException>()
             .WithMessage("Created date must be within the Cover period.");
     }
 
