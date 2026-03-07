@@ -2,6 +2,7 @@
 using Claims.Application.Requests.Cover;
 using Claims.Application.Services;
 using Claims.Domain.Enums;
+using Claims.Domain.Exceptions;
 using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
 using FluentAssertions;
@@ -103,6 +104,9 @@ public class CoversServiceTests
     {
         // Arrange
         _coversRepositoryMock.Setup(x => x.DeleteCoverAsync("1")).Returns(Task.CompletedTask);
+        _claimRepositoryMock
+            .Setup(x => x.GetClaimsByCoverIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(Enumerable.Empty<Claim>());
 
         // Act
         await _sut.DeleteCoverAsync("1");
@@ -110,5 +114,27 @@ public class CoversServiceTests
         // Assert
         _coversRepositoryMock.Verify(x => x.DeleteCoverAsync("1"), Times.Once);
         _auditServiceMock.Verify(x => x.AuditCoverAsync("1", HttpRequestType.DELETE), Times.Once);
+    }
+
+    // Fix #3: New test - cover with active claims must not be deleted
+    [Fact]
+    public async Task DeleteCoverAsync_WhenCoverHasClaims_ShouldThrowCoverHasActiveClaimsException()
+    {
+        // Arrange
+        var existingClaims = new List<Claim>
+        {
+            new() { Id = "claim1", CoverId = "1", Name = "Active Claim", DamageCost = 1000, Type = ClaimType.Collision }
+        };
+        _claimRepositoryMock
+            .Setup(x => x.GetClaimsByCoverIdAsync("1"))
+            .ReturnsAsync(existingClaims);
+
+        // Act
+        var act = async () => await _sut.DeleteCoverAsync("1");
+
+        // Assert
+        await act.Should().ThrowAsync<CoverHasActiveClaimsException>();
+        _coversRepositoryMock.Verify(x => x.DeleteCoverAsync(It.IsAny<string>()), Times.Never);
+        _auditServiceMock.Verify(x => x.AuditCoverAsync(It.IsAny<string>(), It.IsAny<HttpRequestType>()), Times.Never);
     }
 }
