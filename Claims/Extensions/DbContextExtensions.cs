@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 
+
 namespace Claims.Api.Extensions;
 
 /// <summary>
