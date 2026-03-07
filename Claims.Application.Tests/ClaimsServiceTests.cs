@@ -72,7 +72,7 @@ public class ClaimsServiceTests
     }
 
     [Fact]
-    public async Task CreateClaimAsync_WhenCoverNotFound_ShouldThrowArgumentException()
+    public async Task CreateClaimAsync_WhenCoverNotFound_ShouldThrowCoverNotFoundException()
     {
         // Arrange
         var request = new CreateClaimRequest { CoverId = "c1" };
