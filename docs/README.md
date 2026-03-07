@@ -114,3 +114,6 @@ dotnet test
 ```
 
 Unit tests cover `ClaimsService`, `CoversService` and `AuditBackgroundService`.
+
+## CI
+GitHub Actions runs build and tests on every push and PR to `master`.
