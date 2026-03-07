@@ -16,6 +16,7 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     /// <summary>
     /// Retrieves all claims.
     /// </summary>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
     /// <returns>A list of claims.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<ClaimDto>), StatusCodes.Status200OK)]
@@ -30,6 +31,7 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     /// Retrieves a claim by ID.
     /// </summary>
     /// <param name="id">The claim ID.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
     /// <returns>The claim if found.</returns>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(ClaimDto), StatusCodes.Status200OK)]
@@ -44,6 +46,7 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     /// Creates a new claim.
     /// </summary>
     /// <param name="request">The claim details.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
     /// <returns>The created claim.</returns>
     [HttpPost]
     [ProducesResponseType(typeof(ClaimDto), StatusCodes.Status200OK)]
@@ -58,6 +61,7 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     /// Deletes a claim by ID.
     /// </summary>
     /// <param name="id">The claim ID.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

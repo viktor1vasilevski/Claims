@@ -14,10 +14,10 @@ namespace Claims.Controllers;
 [Route("[controller]")]
 public class CoversController(ICoversService _coversService) : ControllerBase
 {
-
     /// <summary>
     /// Retrieves all covers.
     /// </summary>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<CoverDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<CoverDto>>> GetAsync(CancellationToken cancellationToken)
@@ -29,6 +29,8 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     /// <summary>
     /// Retrieves a cover by ID.
     /// </summary>
+    /// <param name="id">The cover ID.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(CoverDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -41,6 +43,8 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     /// <summary>
     /// Creates a new cover.
     /// </summary>
+    /// <param name="request">The cover details.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
     [HttpPost]
     [ProducesResponseType(typeof(CoverDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -53,6 +57,8 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     /// <summary>
     /// Deletes a cover by ID.
     /// </summary>
+    /// <param name="id">The cover ID.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -65,6 +71,9 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     /// <summary>
     /// Computes the premium for a cover.
     /// </summary>
+    /// <param name="startDate">The cover start date.</param>
+    /// <param name="endDate">The cover end date.</param>
+    /// <param name="coverType">The type of cover.</param>
     [HttpPost("compute")]
     [ProducesResponseType(typeof(decimal), StatusCodes.Status200OK)]
     public async Task<ActionResult> ComputePremiumAsync(DateTime startDate, DateTime endDate, CoverType coverType)
