@@ -23,8 +23,8 @@ TestContainers handles the databases automatically. Swagger available at `https:
 ## Project structure
 ```
 Claims.Api            → controllers, middleware
-Claims.Application    → services, DTOs, validators
-Claims.Domain         → models, enums, interfaces
+Claims.Application    → services, strategies, DTOs, validators
+Claims.Domain         → models, enums, interfaces, exceptions
 Claims.Infrastructure → repositories, contexts, background services
 ```
 
