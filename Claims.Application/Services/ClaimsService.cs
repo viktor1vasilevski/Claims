@@ -10,20 +10,19 @@ namespace Claims.Application.Services;
 public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _auditService, 
     ICoversRepository _coversRepository) : IClaimsService
 {
-    public async Task<IReadOnlyList<Claim>> GetClaimsAsync()
+    public async Task<IReadOnlyList<Claim>> GetClaimsAsync(CancellationToken cancellationToken = default)
     {
-        var claims = await _claimsRepository.GetClaimsAsync();
+        var claims = await _claimsRepository.GetClaimsAsync(cancellationToken);
         return claims.ToList();
     }
 
-    public async Task<Claim?> GetClaimAsync(string id)
-    {
-        return await _claimsRepository.GetClaimAsync(id);
-    }
+    public async Task<Claim?> GetClaimAsync(string id, CancellationToken cancellationToken = default)
+        => await _claimsRepository.GetClaimAsync(id, cancellationToken);
 
-    public async Task<Claim> CreateClaimAsync(CreateClaimRequest request)
+    public async Task<Claim> CreateClaimAsync(CreateClaimRequest request, CancellationToken cancellationToken = default)
     {
-        var cover = await _coversRepository.GetCoverAsync(request.CoverId);
+        var cover = await _coversRepository.GetCoverAsync(request.CoverId, cancellationToken);
+
         if (cover is null)
             throw new CoverNotFoundException(request.CoverId);
 
@@ -40,15 +39,15 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
             DamageCost = request.DamageCost
         };
 
-        await _claimsRepository.CreateClaimAsync(claim);
+        await _claimsRepository.CreateClaimAsync(claim, cancellationToken);
         await _auditService.AuditClaimAsync(claim.Id, HttpRequestType.POST);
 
         return claim;
     }
 
-    public async Task DeleteClaimAsync(string id)
+    public async Task DeleteClaimAsync(string id, CancellationToken cancellationToken = default)
     {
-        await _claimsRepository.DeleteClaimAsync(id);
+        await _claimsRepository.DeleteClaimAsync(id, cancellationToken);
         await _auditService.AuditClaimAsync(id, HttpRequestType.DELETE);
     }
 }

@@ -6,9 +6,9 @@ namespace Claims.Application.Interfaces;
 
 public interface ICoversService
 {
-    Task<IReadOnlyList<Cover>> GetCoversAsync();
-    Task<Cover?> GetCoverAsync(string id);
-    Task<Cover> CreateCoverAsync(CreateCoverRequest request);
-    Task DeleteCoverAsync(string id);
+    Task<IReadOnlyList<Cover>> GetCoversAsync(CancellationToken cancellationToken = default);
+    Task<Cover?> GetCoverAsync(string id, CancellationToken cancellationToken = default);
+    Task<Cover> CreateCoverAsync(CreateCoverRequest request, CancellationToken cancellationToken = default);
+    Task DeleteCoverAsync(string id, CancellationToken cancellationToken = default);
     Task<decimal> ComputePremiumAsync(DateTime startDate, DateTime endDate, CoverType coverType);
 }

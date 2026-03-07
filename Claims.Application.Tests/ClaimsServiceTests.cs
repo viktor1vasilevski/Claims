@@ -34,7 +34,9 @@ public class ClaimsServiceTests
             new() { Id = "1", CoverId = "c1", Name = "Claim 1", DamageCost = 1000, Type = ClaimType.Collision },
             new() { Id = "2", CoverId = "c2", Name = "Claim 2", DamageCost = 2000, Type = ClaimType.Fire }
         };
-        _claimsRepositoryMock.Setup(x => x.GetClaimsAsync()).ReturnsAsync(claims);
+        _claimsRepositoryMock
+            .Setup(x => x.GetClaimsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(claims);
 
         // Act
         var result = await _sut.GetClaimsAsync();
@@ -48,7 +50,9 @@ public class ClaimsServiceTests
     {
         // Arrange
         var claim = new Claim { Id = "1", CoverId = "c1", Name = "Claim 1", DamageCost = 1000, Type = ClaimType.Collision };
-        _claimsRepositoryMock.Setup(x => x.GetClaimAsync("1")).ReturnsAsync(claim);
+        _claimsRepositoryMock
+            .Setup(x => x.GetClaimAsync("1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(claim);
 
         // Act
         var result = await _sut.GetClaimAsync("1");
@@ -62,7 +66,9 @@ public class ClaimsServiceTests
     public async Task GetClaimAsync_WhenClaimDoesNotExist_ShouldReturnNull()
     {
         // Arrange
-        _claimsRepositoryMock.Setup(x => x.GetClaimAsync("1")).ReturnsAsync((Claim?)null);
+        _claimsRepositoryMock
+            .Setup(x => x.GetClaimAsync("1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Claim?)null);
 
         // Act
         var result = await _sut.GetClaimAsync("1");
@@ -76,7 +82,9 @@ public class ClaimsServiceTests
     {
         // Arrange
         var request = new CreateClaimRequest { CoverId = "c1" };
-        _coversRepositoryMock.Setup(x => x.GetCoverAsync("c1")).ReturnsAsync((Cover?)null);
+        _coversRepositoryMock
+            .Setup(x => x.GetCoverAsync("c1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Cover?)null);
 
         // Act
         var act = async () => await _sut.CreateClaimAsync(request);
@@ -101,7 +109,9 @@ public class ClaimsServiceTests
             CoverId = "c1",
             Created = new DateTime(2025, 1, 1)
         };
-        _coversRepositoryMock.Setup(x => x.GetCoverAsync("c1")).ReturnsAsync(cover);
+        _coversRepositoryMock
+            .Setup(x => x.GetCoverAsync("c1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(cover);
 
         // Act
         var act = async () => await _sut.CreateClaimAsync(request);
@@ -129,7 +139,9 @@ public class ClaimsServiceTests
             Type = ClaimType.Collision,
             DamageCost = 5000
         };
-        _coversRepositoryMock.Setup(x => x.GetCoverAsync("c1")).ReturnsAsync(cover);
+        _coversRepositoryMock
+            .Setup(x => x.GetCoverAsync("c1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(cover);
 
         // Act
         var result = await _sut.CreateClaimAsync(request);
@@ -137,7 +149,7 @@ public class ClaimsServiceTests
         // Assert
         result.Should().NotBeNull();
         result.CoverId.Should().Be("c1");
-        _claimsRepositoryMock.Verify(x => x.CreateClaimAsync(It.IsAny<Claim>()), Times.Once);
+        _claimsRepositoryMock.Verify(x => x.CreateClaimAsync(It.IsAny<Claim>(), It.IsAny<CancellationToken>()), Times.Once);
         _auditServiceMock.Verify(x => x.AuditClaimAsync(It.IsAny<string>(), HttpRequestType.POST), Times.Once);
     }
 
@@ -145,13 +157,15 @@ public class ClaimsServiceTests
     public async Task DeleteClaimAsync_ShouldDeleteClaimAndAudit()
     {
         // Arrange
-        _claimsRepositoryMock.Setup(x => x.DeleteClaimAsync("1")).Returns(Task.CompletedTask);
+        _claimsRepositoryMock
+            .Setup(x => x.DeleteClaimAsync("1", It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
 
         // Act
         await _sut.DeleteClaimAsync("1");
 
         // Assert
-        _claimsRepositoryMock.Verify(x => x.DeleteClaimAsync("1"), Times.Once);
+        _claimsRepositoryMock.Verify(x => x.DeleteClaimAsync("1", It.IsAny<CancellationToken>()), Times.Once);
         _auditServiceMock.Verify(x => x.AuditClaimAsync("1", HttpRequestType.DELETE), Times.Once);
     }
 }

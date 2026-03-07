@@ -19,9 +19,10 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     /// <returns>A list of claims.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<ClaimDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<ClaimDto>>> GetAsync()
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<ClaimDto>>> GetAsync(CancellationToken cancellationToken)
     {
-        var claims = await _claimsService.GetClaimsAsync();
+        var claims = await _claimsService.GetClaimsAsync(cancellationToken);
         return Ok(claims.Select(ClaimMapper.ToDto));
     }
 
@@ -33,9 +34,9 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(ClaimDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ClaimDto>> GetAsync(string id)
+    public async Task<ActionResult<ClaimDto>> GetAsync(string id, CancellationToken cancellationToken)
     {
-        var claim = await _claimsService.GetClaimAsync(id);
+        var claim = await _claimsService.GetClaimAsync(id, cancellationToken);
         return claim is null ? NotFound() : Ok(ClaimMapper.ToDto(claim));
     }
 
@@ -47,9 +48,9 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(ClaimDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ClaimDto>> CreateAsync(CreateClaimRequest request)
+    public async Task<ActionResult<ClaimDto>> CreateAsync(CreateClaimRequest request, CancellationToken cancellationToken)
     {
-        var claim = await _claimsService.CreateClaimAsync(request);
+        var claim = await _claimsService.CreateClaimAsync(request, cancellationToken);
         return Ok(ClaimMapper.ToDto(claim));
     }
 
@@ -60,9 +61,9 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> DeleteAsync(string id)
+    public async Task<ActionResult> DeleteAsync(string id, CancellationToken cancellationToken)
     {
-        await _claimsService.DeleteClaimAsync(id);
+        await _claimsService.DeleteClaimAsync(id, cancellationToken);
         return NoContent();
     }
 }

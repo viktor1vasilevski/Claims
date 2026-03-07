@@ -40,7 +40,9 @@ public class CoversServiceTests
             new() { Id = "1", StartDate = new DateTime(2026, 1, 1), EndDate = new DateTime(2026, 12, 31), Type = CoverType.Yacht },
             new() { Id = "2", StartDate = new DateTime(2026, 1, 1), EndDate = new DateTime(2026, 12, 31), Type = CoverType.Tanker }
         };
-        _coversRepositoryMock.Setup(x => x.GetCoversAsync()).ReturnsAsync(covers);
+        _coversRepositoryMock
+            .Setup(x => x.GetCoversAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(covers);
 
         // Act
         var result = await _sut.GetCoversAsync();
@@ -54,7 +56,9 @@ public class CoversServiceTests
     {
         // Arrange
         var cover = new Cover { Id = "1", StartDate = new DateTime(2026, 1, 1), EndDate = new DateTime(2026, 12, 31), Type = CoverType.Yacht };
-        _coversRepositoryMock.Setup(x => x.GetCoverAsync("1")).ReturnsAsync(cover);
+        _coversRepositoryMock
+            .Setup(x => x.GetCoverAsync("1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(cover);
 
         // Act
         var result = await _sut.GetCoverAsync("1");
@@ -68,7 +72,9 @@ public class CoversServiceTests
     public async Task GetCoverAsync_WhenCoverDoesNotExist_ShouldReturnNull()
     {
         // Arrange
-        _coversRepositoryMock.Setup(x => x.GetCoverAsync("1")).ReturnsAsync((Cover?)null);
+        _coversRepositoryMock
+            .Setup(x => x.GetCoverAsync("1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Cover?)null);
 
         // Act
         var result = await _sut.GetCoverAsync("1");
@@ -95,7 +101,7 @@ public class CoversServiceTests
         result.Should().NotBeNull();
         result.Type.Should().Be(CoverType.Yacht);
         result.Premium.Should().Be(50000m);
-        _coversRepositoryMock.Verify(x => x.CreateCoverAsync(It.IsAny<Cover>()), Times.Once);
+        _coversRepositoryMock.Verify(x => x.CreateCoverAsync(It.IsAny<Cover>(), It.IsAny<CancellationToken>()), Times.Once);
         _auditServiceMock.Verify(x => x.AuditCoverAsync(It.IsAny<string>(), HttpRequestType.POST), Times.Once);
     }
 
@@ -103,16 +109,18 @@ public class CoversServiceTests
     public async Task DeleteCoverAsync_ShouldDeleteCoverAndAudit()
     {
         // Arrange
-        _coversRepositoryMock.Setup(x => x.DeleteCoverAsync("1")).Returns(Task.CompletedTask);
+        _coversRepositoryMock
+            .Setup(x => x.DeleteCoverAsync("1", It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
         _claimRepositoryMock
-            .Setup(x => x.GetClaimsByCoverIdAsync(It.IsAny<string>()))
+            .Setup(x => x.GetClaimsByCoverIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Enumerable.Empty<Claim>());
 
         // Act
         await _sut.DeleteCoverAsync("1");
 
         // Assert
-        _coversRepositoryMock.Verify(x => x.DeleteCoverAsync("1"), Times.Once);
+        _coversRepositoryMock.Verify(x => x.DeleteCoverAsync("1", It.IsAny<CancellationToken>()), Times.Once);
         _auditServiceMock.Verify(x => x.AuditCoverAsync("1", HttpRequestType.DELETE), Times.Once);
     }
 
@@ -125,7 +133,7 @@ public class CoversServiceTests
             new() { Id = "claim1", CoverId = "1", Name = "Active Claim", DamageCost = 1000, Type = ClaimType.Collision }
         };
         _claimRepositoryMock
-            .Setup(x => x.GetClaimsByCoverIdAsync("1"))
+            .Setup(x => x.GetClaimsByCoverIdAsync("1", It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingClaims);
 
         // Act
@@ -133,7 +141,7 @@ public class CoversServiceTests
 
         // Assert
         await act.Should().ThrowAsync<CoverHasActiveClaimsException>();
-        _coversRepositoryMock.Verify(x => x.DeleteCoverAsync(It.IsAny<string>()), Times.Never);
+        _coversRepositoryMock.Verify(x => x.DeleteCoverAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
         _auditServiceMock.Verify(x => x.AuditCoverAsync(It.IsAny<string>(), It.IsAny<HttpRequestType>()), Times.Never);
     }
 }

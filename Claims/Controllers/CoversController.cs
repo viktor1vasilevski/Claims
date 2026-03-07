@@ -20,9 +20,9 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     /// </summary>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<CoverDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<CoverDto>>> GetAsync()
+    public async Task<ActionResult<IEnumerable<CoverDto>>> GetAsync(CancellationToken cancellationToken)
     {
-        var covers = await _coversService.GetCoversAsync();
+        var covers = await _coversService.GetCoversAsync(cancellationToken);
         return Ok(covers.Select(CoverMapper.ToDto));
     }
 
@@ -32,9 +32,9 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(CoverDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<CoverDto>> GetAsync(string id)
+    public async Task<ActionResult<CoverDto>> GetAsync(string id, CancellationToken cancellationToken)
     {
-        var cover = await _coversService.GetCoverAsync(id);
+        var cover = await _coversService.GetCoverAsync(id, cancellationToken);
         return cover is null ? NotFound() : Ok(CoverMapper.ToDto(cover));
     }
 
@@ -44,9 +44,9 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(CoverDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<CoverDto>> CreateAsync(CreateCoverRequest request)
+    public async Task<ActionResult<CoverDto>> CreateAsync(CreateCoverRequest request, CancellationToken cancellationToken)
     {
-        var cover = await _coversService.CreateCoverAsync(request);
+        var cover = await _coversService.CreateCoverAsync(request, cancellationToken);
         return Ok(CoverMapper.ToDto(cover));
     }
 
@@ -56,9 +56,9 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> DeleteAsync(string id)
+    public async Task<ActionResult> DeleteAsync(string id, CancellationToken cancellationToken)
     {
-        await _coversService.DeleteCoverAsync(id);
+        await _coversService.DeleteCoverAsync(id, cancellationToken);
         return NoContent();
     }
 

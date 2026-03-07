@@ -4,8 +4,8 @@ namespace Claims.Domain.Interfaces;
 
 public interface ICoversRepository
 {
-    Task<IEnumerable<Cover>> GetCoversAsync();
-    Task<Cover?> GetCoverAsync(string id);
-    Task CreateCoverAsync(Cover cover);
-    Task DeleteCoverAsync(string id);
+    Task<IEnumerable<Cover>> GetCoversAsync(CancellationToken cancellationToken = default);
+    Task<Cover?> GetCoverAsync(string id, CancellationToken cancellationToken = default);
+    Task CreateCoverAsync(Cover cover, CancellationToken cancellationToken = default);
+    Task DeleteCoverAsync(string id, CancellationToken cancellationToken = default);
 }

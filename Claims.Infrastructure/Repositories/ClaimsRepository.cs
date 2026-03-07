@@ -8,28 +8,27 @@ namespace Claims.Infrastructure.Repositories;
 
 public class ClaimsRepository(ClaimsContext _context) : IClaimsRepository
 {
-    public async Task<IEnumerable<Claim>> GetClaimsAsync()
-        => await _context.Claims.ToListAsync();
+    public async Task<IEnumerable<Claim>> GetClaimsAsync(CancellationToken cancellationToken = default)
+    => await _context.Claims.ToListAsync(cancellationToken);
 
-    public async Task<Claim?> GetClaimAsync(string id)
-        => await _context.Claims.Where(c => c.Id == id).SingleOrDefaultAsync();
+    public async Task<Claim?> GetClaimAsync(string id, CancellationToken cancellationToken = default)
+        => await _context.Claims.Where(c => c.Id == id).SingleOrDefaultAsync(cancellationToken);
 
-    public async Task CreateClaimAsync(Claim claim)
+    public async Task CreateClaimAsync(Claim claim, CancellationToken cancellationToken = default)
     {
         _context.Claims.Add(claim);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteClaimAsync(string id)
+    public async Task DeleteClaimAsync(string id, CancellationToken cancellationToken = default)
     {
-        var claim = await GetClaimAsync(id);
+        var claim = await GetClaimAsync(id, cancellationToken);
         if (claim is null)
             throw new ClaimNotFoundException(id);
-
         _context.Claims.Remove(claim);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Claim>> GetClaimsByCoverIdAsync(string coverId)
-        => await _context.Claims.Where(c => c.CoverId == coverId).ToListAsync();
+    public async Task<IEnumerable<Claim>> GetClaimsByCoverIdAsync(string coverId, CancellationToken cancellationToken = default)
+        => await _context.Claims.Where(c => c.CoverId == coverId).ToListAsync(cancellationToken);
 }

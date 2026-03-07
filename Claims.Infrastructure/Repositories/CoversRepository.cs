@@ -8,26 +8,24 @@ namespace Claims.Infrastructure.Repositories;
 
 public class CoversRepository(ClaimsContext _context) : ICoversRepository
 {
+    public async Task<Cover?> GetCoverAsync(string id, CancellationToken cancellationToken = default)
+        => await _context.Covers.Where(c => c.Id == id).SingleOrDefaultAsync(cancellationToken);
 
-    public async Task<Cover?> GetCoverAsync(string id)
-        => await _context.Covers.Where(c => c.Id == id).SingleOrDefaultAsync();
+    public async Task<IEnumerable<Cover>> GetCoversAsync(CancellationToken cancellationToken = default)
+        => await _context.Covers.ToListAsync(cancellationToken);
 
-    public async Task<IEnumerable<Cover>> GetCoversAsync()
-        => await _context.Covers.ToListAsync();
-
-    public async Task CreateCoverAsync(Cover cover)
+    public async Task CreateCoverAsync(Cover cover, CancellationToken cancellationToken = default)
     {
         _context.Covers.Add(cover);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteCoverAsync(string id)
+    public async Task DeleteCoverAsync(string id, CancellationToken cancellationToken = default)
     {
-        var cover = await GetCoverAsync(id);
+        var cover = await GetCoverAsync(id, cancellationToken);
         if (cover is null)
             throw new CoverNotFoundException(id);
-
         _context.Covers.Remove(cover);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }
