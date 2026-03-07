@@ -18,7 +18,7 @@ public class AuditBackgroundService(AuditChannel _auditChannel, IServiceScopeFac
             {
                 using var scope = _scopeFactory.CreateScope();
                 var auditRepository = scope.ServiceProvider.GetRequiredService<IAuditRepository>();
-                await _processor.ProcessAsync(auditRepository, message);
+                await _processor.ProcessAsync(auditRepository, message, stoppingToken);
             }
             catch (Exception ex)
             {

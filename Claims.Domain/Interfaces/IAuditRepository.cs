@@ -4,6 +4,6 @@ namespace Claims.Domain.Interfaces;
 
 public interface IAuditRepository
 {
-    Task AddClaimAuditAsync(ClaimAudit claimAudit);
-    Task AddCoverAuditAsync(CoverAudit coverAudit);
+    Task AddClaimAuditAsync(ClaimAudit claimAudit, CancellationToken cancellationToken = default);
+    Task AddCoverAuditAsync(CoverAudit coverAudit, CancellationToken cancellationToken = default);
 }

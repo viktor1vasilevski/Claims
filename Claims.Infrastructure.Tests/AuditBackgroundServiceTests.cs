@@ -43,8 +43,10 @@ public class AuditBackgroundServiceTests
         // Assert
         _processorMock.Verify(x => x.ProcessAsync(
             It.IsAny<IAuditRepository>(),
-            It.Is<AuditMessage>(m => m.Id == "123" && m.HttpRequestType == HttpRequestType.POST && m.EntityType == AuditEntityType.Claim)),
+            It.Is<AuditMessage>(m => m.Id == "123" && m.HttpRequestType == HttpRequestType.POST && m.EntityType == AuditEntityType.Claim),
+            It.IsAny<CancellationToken>()),
             Times.Once);
+
     }
 
     [Fact]
@@ -63,7 +65,8 @@ public class AuditBackgroundServiceTests
         // Assert
         _processorMock.Verify(x => x.ProcessAsync(
             It.IsAny<IAuditRepository>(),
-            It.Is<AuditMessage>(m => m.Id == "456" && m.HttpRequestType == HttpRequestType.DELETE && m.EntityType == AuditEntityType.Cover)),
+            It.Is<AuditMessage>(m => m.Id == "456" && m.HttpRequestType == HttpRequestType.DELETE && m.EntityType == AuditEntityType.Cover),
+            It.IsAny<CancellationToken>()),
             Times.Once);
     }
 }
