@@ -1,4 +1,5 @@
-﻿using Claims.Domain.Interfaces;
+﻿using Claims.Domain.Exceptions;
+using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
 using Claims.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
@@ -23,10 +24,10 @@ public class CoversRepository(ClaimsContext _context) : ICoversRepository
     public async Task DeleteCoverAsync(string id)
     {
         var cover = await GetCoverAsync(id);
-        if (cover is not null)
-        {
-            _context.Covers.Remove(cover);
-            await _context.SaveChangesAsync();
-        }
+        if (cover is null)
+            throw new CoverNotFoundException(id);
+
+        _context.Covers.Remove(cover);
+        await _context.SaveChangesAsync();
     }
 }

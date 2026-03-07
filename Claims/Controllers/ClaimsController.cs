@@ -26,6 +26,20 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     }
 
     /// <summary>
+    /// Retrieves a claim by ID.
+    /// </summary>
+    /// <param name="id">The claim ID.</param>
+    /// <returns>The claim if found.</returns>
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(ClaimDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ClaimDto>> GetAsync(string id)
+    {
+        var claim = await _claimsService.GetClaimAsync(id);
+        return claim is null ? NotFound() : Ok(ClaimMapper.ToDto(claim));
+    }
+
+    /// <summary>
     /// Creates a new claim.
     /// </summary>
     /// <param name="request">The claim details.</param>
@@ -50,19 +64,5 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     {
         await _claimsService.DeleteClaimAsync(id);
         return NoContent();
-    }
-
-    /// <summary>
-    /// Retrieves a claim by ID.
-    /// </summary>
-    /// <param name="id">The claim ID.</param>
-    /// <returns>The claim if found.</returns>
-    [HttpGet("{id}")]
-    [ProducesResponseType(typeof(ClaimDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ClaimDto>> GetAsync(string id)
-    {
-        var claim = await _claimsService.GetClaimAsync(id);
-        return claim is null ? NotFound() : Ok(ClaimMapper.ToDto(claim));
     }
 }

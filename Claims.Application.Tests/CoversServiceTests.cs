@@ -115,8 +115,6 @@ public class CoversServiceTests
         _coversRepositoryMock.Verify(x => x.DeleteCoverAsync("1"), Times.Once);
         _auditServiceMock.Verify(x => x.AuditCoverAsync("1", HttpRequestType.DELETE), Times.Once);
     }
-
-    // Fix #3: New test - cover with active claims must not be deleted
     [Fact]
     public async Task DeleteCoverAsync_WhenCoverHasClaims_ShouldThrowCoverHasActiveClaimsException()
     {

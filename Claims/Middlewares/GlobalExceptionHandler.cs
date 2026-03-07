@@ -48,6 +48,12 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> _logger) : I
                 message = ex.Message;
                 break;
 
+            case ClaimNotFoundException ex:
+                _logger.LogWarning(ex, "Claim not found: {Message}", ex.Message);
+                statusCode = StatusCodes.Status404NotFound;
+                message = ex.Message;
+                break;
+
             case ArgumentException ex:
                 _logger.LogWarning(ex, "Validation failed: {Message}", ex.Message);
                 statusCode = StatusCodes.Status400BadRequest;

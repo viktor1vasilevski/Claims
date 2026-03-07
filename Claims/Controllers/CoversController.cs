@@ -14,16 +14,6 @@ namespace Claims.Controllers;
 [Route("[controller]")]
 public class CoversController(ICoversService _coversService) : ControllerBase
 {
-    /// <summary>
-    /// Computes the premium for a cover.
-    /// </summary>
-    [HttpPost("compute")]
-    [ProducesResponseType(typeof(decimal), StatusCodes.Status200OK)]
-    public async Task<ActionResult> ComputePremiumAsync(DateTime startDate, DateTime endDate, CoverType coverType)
-    {
-        var result = await _coversService.ComputePremiumAsync(startDate, endDate, coverType);
-        return Ok(result);
-    }
 
     /// <summary>
     /// Retrieves all covers.
@@ -70,5 +60,16 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     {
         await _coversService.DeleteCoverAsync(id);
         return NoContent();
+    }
+
+    /// <summary>
+    /// Computes the premium for a cover.
+    /// </summary>
+    [HttpPost("compute")]
+    [ProducesResponseType(typeof(decimal), StatusCodes.Status200OK)]
+    public async Task<ActionResult> ComputePremiumAsync(DateTime startDate, DateTime endDate, CoverType coverType)
+    {
+        var result = await _coversService.ComputePremiumAsync(startDate, endDate, coverType);
+        return Ok(result);
     }
 }
