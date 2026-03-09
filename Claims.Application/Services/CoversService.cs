@@ -31,6 +31,7 @@ public class CoversService(ICoversRepository _coversRepository, IClaimsRepositor
         };
         await _coversRepository.CreateCoverAsync(cover, cancellationToken);
         await _auditService.AuditCoverAsync(cover.Id, HttpRequestType.POST);
+
         return cover;
     }
 
@@ -48,6 +49,6 @@ public class CoversService(ICoversRepository _coversRepository, IClaimsRepositor
         await _auditService.AuditCoverAsync(id, HttpRequestType.DELETE);
     }
 
-    public Task<decimal> ComputePremiumAsync(DateTime startDate, DateTime endDate, CoverType coverType)
-        => _premiumCalculator.ComputeAsync(startDate, endDate, coverType);
+    public Task<decimal> ComputePremiumAsync(ComputePremiumRequest request)
+        => _premiumCalculator.ComputeAsync(request.StartDate, request.EndDate, request.Type);
 }

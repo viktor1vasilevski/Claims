@@ -79,7 +79,7 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> ComputePremiumAsync([FromQuery] ComputePremiumRequest request, CancellationToken cancellationToken)
     {
-        var result = await _coversService.ComputePremiumAsync(request.StartDate, request.EndDate, request.Type);
+        var result = await _coversService.ComputePremiumAsync(request);
         return Ok(result);
     }
 }
