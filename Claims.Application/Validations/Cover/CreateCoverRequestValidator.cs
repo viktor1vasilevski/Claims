@@ -7,6 +7,10 @@ public class CreateCoverRequestValidator : AbstractValidator<CreateCoverRequest>
 {
     public CreateCoverRequestValidator()
     {
+        RuleFor(x => x.Type)
+            .IsInEnum()
+            .WithMessage("Cover type is invalid.");
+
         RuleFor(x => x.StartDate)
             .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
             .WithMessage("StartDate cannot be in the past.");

@@ -7,7 +7,21 @@ public class CreateClaimRequestValidator : AbstractValidator<CreateClaimRequest>
 {
     public CreateClaimRequestValidator()
     {
+        RuleFor(x => x.CoverId)
+            .NotEmpty()
+            .WithMessage("CoverId is required.");
+
+        RuleFor(x => x.Name)
+            .NotEmpty()
+            .WithMessage("Name is required.");
+
+        RuleFor(x => x.Type)
+            .IsInEnum()
+            .WithMessage("Claim type is invalid.");
+
         RuleFor(x => x.DamageCost)
+            .GreaterThan(0)
+            .WithMessage("DamageCost must be greater than 0.")
             .LessThanOrEqualTo(100_000)
             .WithMessage("DamageCost cannot exceed 100,000.");
 

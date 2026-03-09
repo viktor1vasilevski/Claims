@@ -81,7 +81,7 @@ public class ClaimsServiceTests
     public async Task CreateClaimAsync_WhenCoverNotFound_ShouldThrowCoverNotFoundException()
     {
         // Arrange
-        var request = new CreateClaimRequest { CoverId = "c1" };
+        var request = new CreateClaimRequest { CoverId = "c1" , Name = "Test Claim"};
         _coversRepositoryMock
             .Setup(x => x.GetCoverAsync("c1", It.IsAny<CancellationToken>()))
             .ReturnsAsync((Cover?)null);
@@ -107,7 +107,8 @@ public class ClaimsServiceTests
         var request = new CreateClaimRequest
         {
             CoverId = "c1",
-            Created = new DateTime(2025, 1, 1)
+            Created = new DateTime(2025, 1, 1),
+            Name = "Test",
         };
         _coversRepositoryMock
             .Setup(x => x.GetCoverAsync("c1", It.IsAny<CancellationToken>()))
