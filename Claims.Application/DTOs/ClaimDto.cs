@@ -1,5 +1,4 @@
 ﻿using Claims.Domain.Enums;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace Claims.Application.DTOs;
 
