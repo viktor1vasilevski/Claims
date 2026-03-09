@@ -20,7 +20,7 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     /// <returns>A list of claims.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<ClaimDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyList<ClaimDto>>> GetAsync(CancellationToken cancellationToken)
+    public async Task<ActionResult<IReadOnlyList<ClaimDto>>> Get(CancellationToken cancellationToken)
     {
         var claims = await _claimsService.GetClaimsAsync(cancellationToken);
         return Ok(claims.Select(ClaimMapper.ToDto));
@@ -35,9 +35,9 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(ClaimDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ClaimDto>> GetAsync(string id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ClaimDto>> GetById(string id, CancellationToken cancellationToken)
     {
-        var claim = await _claimsService.GetClaimAsync(id, cancellationToken);
+        var claim = await _claimsService.GetClaimByIdAsync(id, cancellationToken);
         return claim is null ? NotFound() : Ok(ClaimMapper.ToDto(claim));
     }
 
@@ -51,10 +51,10 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     [ProducesResponseType(typeof(ClaimDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ClaimDto>> CreateAsync(CreateClaimRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<ClaimDto>> Create(CreateClaimRequest request, CancellationToken cancellationToken)
     {
         var claim = await _claimsService.CreateClaimAsync(request, cancellationToken);
-        return CreatedAtAction(nameof(GetAsync), new { id = claim.Id }, ClaimMapper.ToDto(claim));
+        return CreatedAtAction(nameof(GetById), new { id = claim.Id }, ClaimMapper.ToDto(claim));
     }
 
     /// <summary>
@@ -66,7 +66,7 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> DeleteAsync(string id, CancellationToken cancellationToken)
+    public async Task<ActionResult> Delete(string id, CancellationToken cancellationToken)
     {
         await _claimsService.DeleteClaimAsync(id, cancellationToken);
         return NoContent();

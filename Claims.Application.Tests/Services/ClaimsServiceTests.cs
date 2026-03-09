@@ -51,11 +51,11 @@ public class ClaimsServiceTests
         // Arrange
         var claim = new Claim { Id = "1", CoverId = "c1", Name = "Claim 1", DamageCost = 1000, Type = ClaimType.Collision };
         _claimsRepositoryMock
-            .Setup(x => x.GetClaimAsync("1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetClaimByIdAsync("1", It.IsAny<CancellationToken>()))
             .ReturnsAsync(claim);
 
         // Act
-        var result = await _sut.GetClaimAsync("1");
+        var result = await _sut.GetClaimByIdAsync("1");
 
         // Assert
         result.Should().NotBeNull();
@@ -67,11 +67,11 @@ public class ClaimsServiceTests
     {
         // Arrange
         _claimsRepositoryMock
-            .Setup(x => x.GetClaimAsync("1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetClaimByIdAsync("1", It.IsAny<CancellationToken>()))
             .ReturnsAsync((Claim?)null);
 
         // Act
-        var result = await _sut.GetClaimAsync("1");
+        var result = await _sut.GetClaimByIdAsync("1");
 
         // Assert
         result.Should().BeNull();
@@ -83,7 +83,7 @@ public class ClaimsServiceTests
         // Arrange
         var request = new CreateClaimRequest { CoverId = "c1", Name = "Test Claim" };
         _coversRepositoryMock
-            .Setup(x => x.GetCoverAsync("c1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetCoverByIdAsync("c1", It.IsAny<CancellationToken>()))
             .ReturnsAsync((Cover?)null);
 
         // Act
@@ -111,7 +111,7 @@ public class ClaimsServiceTests
             Name = "Test",
         };
         _coversRepositoryMock
-            .Setup(x => x.GetCoverAsync("c1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetCoverByIdAsync("c1", It.IsAny<CancellationToken>()))
             .ReturnsAsync(cover);
 
         // Act
@@ -141,7 +141,7 @@ public class ClaimsServiceTests
             DamageCost = 5000
         };
         _coversRepositoryMock
-            .Setup(x => x.GetCoverAsync("c1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetCoverByIdAsync("c1", It.IsAny<CancellationToken>()))
             .ReturnsAsync(cover);
 
         // Act
@@ -161,7 +161,7 @@ public class ClaimsServiceTests
         var claim = new Claim { Id = "1", CoverId = "c1", Name = "Test", DamageCost = 1000, Type = ClaimType.Collision };
 
         _claimsRepositoryMock
-            .Setup(x => x.GetClaimAsync("1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetClaimByIdAsync("1", It.IsAny<CancellationToken>()))
             .ReturnsAsync(claim);
         _claimsRepositoryMock
             .Setup(x => x.DeleteClaimAsync("1", It.IsAny<CancellationToken>()))
@@ -180,7 +180,7 @@ public class ClaimsServiceTests
     {
         // Arrange
         _claimsRepositoryMock
-            .Setup(x => x.GetClaimAsync("1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetClaimByIdAsync("1", It.IsAny<CancellationToken>()))
             .ReturnsAsync((Claim?)null);
 
         // Act

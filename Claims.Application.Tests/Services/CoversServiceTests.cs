@@ -57,11 +57,11 @@ public class CoversServiceTests
         // Arrange
         var cover = new Cover { Id = "1", StartDate = new DateTime(2026, 1, 1), EndDate = new DateTime(2026, 12, 31), Type = CoverType.Yacht };
         _coversRepositoryMock
-            .Setup(x => x.GetCoverAsync("1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetCoverByIdAsync("1", It.IsAny<CancellationToken>()))
             .ReturnsAsync(cover);
 
         // Act
-        var result = await _sut.GetCoverAsync("1");
+        var result = await _sut.GetCoverByIdAsync("1");
 
         // Assert
         result.Should().NotBeNull();
@@ -73,11 +73,11 @@ public class CoversServiceTests
     {
         // Arrange
         _coversRepositoryMock
-            .Setup(x => x.GetCoverAsync("1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetCoverByIdAsync("1", It.IsAny<CancellationToken>()))
             .ReturnsAsync((Cover?)null);
 
         // Act
-        var result = await _sut.GetCoverAsync("1");
+        var result = await _sut.GetCoverByIdAsync("1");
 
         // Assert
         result.Should().BeNull();
@@ -112,7 +112,7 @@ public class CoversServiceTests
         var cover = new Cover { Id = "1", StartDate = new DateTime(2026, 1, 1), EndDate = new DateTime(2026, 12, 31), Type = CoverType.Yacht };
 
         _coversRepositoryMock
-            .Setup(x => x.GetCoverAsync("1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetCoverByIdAsync("1", It.IsAny<CancellationToken>()))
             .ReturnsAsync(cover);
         _coversRepositoryMock
             .Setup(x => x.DeleteCoverAsync("1", It.IsAny<CancellationToken>()))
@@ -134,7 +134,7 @@ public class CoversServiceTests
     {
         // Arrange
         _coversRepositoryMock
-            .Setup(x => x.GetCoverAsync("1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetCoverByIdAsync("1", It.IsAny<CancellationToken>()))
             .ReturnsAsync((Cover?)null);
 
         // Act
@@ -158,7 +158,7 @@ public class CoversServiceTests
         };
 
         _coversRepositoryMock
-            .Setup(x => x.GetCoverAsync("1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetCoverByIdAsync("1", It.IsAny<CancellationToken>()))
             .ReturnsAsync(cover);
         _claimRepositoryMock
             .Setup(x => x.GetClaimsByCoverIdAsync("1", It.IsAny<CancellationToken>()))

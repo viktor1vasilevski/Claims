@@ -16,8 +16,8 @@ public class CoversService(ICoversRepository _coversRepository, IClaimsRepositor
         return covers.ToList();
     }
 
-    public async Task<Cover?> GetCoverAsync(string id, CancellationToken cancellationToken = default)
-        => await _coversRepository.GetCoverAsync(id, cancellationToken);
+    public async Task<Cover?> GetCoverByIdAsync(string id, CancellationToken cancellationToken = default)
+        => await _coversRepository.GetCoverByIdAsync(id, cancellationToken);
 
     public async Task<Cover> CreateCoverAsync(CreateCoverRequest request, CancellationToken cancellationToken = default)
     {
@@ -37,7 +37,7 @@ public class CoversService(ICoversRepository _coversRepository, IClaimsRepositor
 
     public async Task DeleteCoverAsync(string id, CancellationToken cancellationToken = default)
     {
-        var cover = await _coversRepository.GetCoverAsync(id, cancellationToken);
+        var cover = await _coversRepository.GetCoverByIdAsync(id, cancellationToken);
         if (cover is null)
             throw new CoverNotFoundException(id);
 

@@ -16,12 +16,12 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
         return claims.ToList();
     }
 
-    public async Task<Claim?> GetClaimAsync(string id, CancellationToken cancellationToken = default)
-        => await _claimsRepository.GetClaimAsync(id, cancellationToken);
+    public async Task<Claim?> GetClaimByIdAsync(string id, CancellationToken cancellationToken = default)
+        => await _claimsRepository.GetClaimByIdAsync(id, cancellationToken);
 
     public async Task<Claim> CreateClaimAsync(CreateClaimRequest request, CancellationToken cancellationToken = default)
     {
-        var cover = await _coversRepository.GetCoverAsync(request.CoverId, cancellationToken);
+        var cover = await _coversRepository.GetCoverByIdAsync(request.CoverId, cancellationToken);
 
         if (cover is null)
             throw new CoverNotFoundException(request.CoverId);
@@ -47,7 +47,7 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
 
     public async Task DeleteClaimAsync(string id, CancellationToken cancellationToken = default)
     {
-        var claim = await _claimsRepository.GetClaimAsync(id, cancellationToken);
+        var claim = await _claimsRepository.GetClaimByIdAsync(id, cancellationToken);
         if (claim is null)
             throw new ClaimNotFoundException(id);
         await _claimsRepository.DeleteClaimAsync(id, cancellationToken);
