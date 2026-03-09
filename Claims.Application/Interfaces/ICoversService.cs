@@ -1,5 +1,4 @@
 ﻿using Claims.Application.Requests.Cover;
-using Claims.Domain.Enums;
 using Claims.Domain.Models;
 
 namespace Claims.Application.Interfaces;

@@ -7,8 +7,8 @@ namespace Claims.Infrastructure.Repositories;
 
 public class ClaimsRepository(ClaimsContext _context) : IClaimsRepository
 {
-    public async Task<IEnumerable<Claim>> GetClaimsAsync(CancellationToken cancellationToken = default)
-    => await _context.Claims.ToListAsync(cancellationToken);
+    public async Task<IReadOnlyList<Claim>> GetClaimsAsync(CancellationToken cancellationToken = default)
+        => await _context.Claims.ToListAsync(cancellationToken);
 
     public async Task<Claim?> GetClaimAsync(string id, CancellationToken cancellationToken = default)
         => await _context.Claims.Where(c => c.Id == id).SingleOrDefaultAsync(cancellationToken);

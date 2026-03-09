@@ -19,8 +19,8 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     /// <param name="cancellationToken">Token to cancel the request.</param>
     /// <returns>A list of all covers.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<CoverDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<CoverDto>>> GetAsync(CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(IReadOnlyList<CoverDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<CoverDto>>> GetAsync(CancellationToken cancellationToken)
     {
         var covers = await _coversService.GetCoversAsync(cancellationToken);
         return Ok(covers.Select(CoverMapper.ToDto));

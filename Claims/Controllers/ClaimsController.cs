@@ -19,8 +19,8 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     /// <param name="cancellationToken">Token to cancel the request.</param>
     /// <returns>A list of claims.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<ClaimDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<ClaimDto>>> GetAsync(CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(IReadOnlyList<ClaimDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<ClaimDto>>> GetAsync(CancellationToken cancellationToken)
     {
         var claims = await _claimsService.GetClaimsAsync(cancellationToken);
         return Ok(claims.Select(ClaimMapper.ToDto));
