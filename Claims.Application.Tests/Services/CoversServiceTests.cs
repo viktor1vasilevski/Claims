@@ -8,7 +8,7 @@ using Claims.Domain.Models;
 using FluentAssertions;
 using Moq;
 
-namespace Claims.Application.Tests;
+namespace Claims.Application.Tests.Services;
 
 public class CoversServiceTests
 {

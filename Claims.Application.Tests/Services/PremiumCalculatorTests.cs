@@ -1,10 +1,9 @@
-﻿using Claims.Application.Interfaces;
-using Claims.Application.Services;
+﻿using Claims.Application.Services;
 using Claims.Application.Strategies;
 using Claims.Domain.Enums;
 using FluentAssertions;
 
-namespace Claims.Application.Tests;
+namespace Claims.Application.Tests.Services;
 
 public class PremiumCalculatorTests
 {

@@ -8,7 +8,7 @@ using Claims.Domain.Models;
 using FluentAssertions;
 using Moq;
 
-namespace Claims.Application.Tests;
+namespace Claims.Application.Tests.Services;
 
 public class ClaimsServiceTests
 {
@@ -81,7 +81,7 @@ public class ClaimsServiceTests
     public async Task CreateClaimAsync_WhenCoverNotFound_ShouldThrowCoverNotFoundException()
     {
         // Arrange
-        var request = new CreateClaimRequest { CoverId = "c1" , Name = "Test Claim"};
+        var request = new CreateClaimRequest { CoverId = "c1", Name = "Test Claim" };
         _coversRepositoryMock
             .Setup(x => x.GetCoverAsync("c1", It.IsAny<CancellationToken>()))
             .ReturnsAsync((Cover?)null);
