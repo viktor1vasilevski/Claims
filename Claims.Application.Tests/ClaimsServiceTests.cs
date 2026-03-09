@@ -95,7 +95,7 @@ public class ClaimsServiceTests
     }
 
     [Fact]
-    public async Task CreateClaimAsync_WhenCreatedDateOutsideCoverPeriod_ShouldThrowArgumentException()
+    public async Task CreateClaimAsync_WhenCreatedDateOutsideCoverPeriod_ShouldThrowClaimDateOutOfRangeException()
     {
         // Arrange
         var cover = new Cover
