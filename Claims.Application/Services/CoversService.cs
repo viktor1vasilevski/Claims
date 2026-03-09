@@ -36,9 +36,14 @@ public class CoversService(ICoversRepository _coversRepository, IClaimsRepositor
 
     public async Task DeleteCoverAsync(string id, CancellationToken cancellationToken = default)
     {
+        var cover = await _coversRepository.GetCoverAsync(id, cancellationToken);
+        if (cover is null)
+            throw new CoverNotFoundException(id);
+
         var claims = await _claimsRepository.GetClaimsByCoverIdAsync(id, cancellationToken);
         if (claims.Any())
             throw new CoverHasActiveClaimsException(id);
+
         await _coversRepository.DeleteCoverAsync(id, cancellationToken);
         await _auditService.AuditCoverAsync(id, HttpRequestType.DELETE);
     }

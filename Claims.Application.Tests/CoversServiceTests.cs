@@ -109,6 +109,11 @@ public class CoversServiceTests
     public async Task DeleteCoverAsync_ShouldDeleteCoverAndAudit()
     {
         // Arrange
+        var cover = new Cover { Id = "1", StartDate = new DateTime(2026, 1, 1), EndDate = new DateTime(2026, 12, 31), Type = CoverType.Yacht };
+
+        _coversRepositoryMock
+            .Setup(x => x.GetCoverAsync("1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(cover);
         _coversRepositoryMock
             .Setup(x => x.DeleteCoverAsync("1", It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
@@ -125,13 +130,36 @@ public class CoversServiceTests
     }
 
     [Fact]
+    public async Task DeleteCoverAsync_WhenCoverDoesNotExist_ShouldThrowCoverNotFoundException()
+    {
+        // Arrange
+        _coversRepositoryMock
+            .Setup(x => x.GetCoverAsync("1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Cover?)null);
+
+        // Act
+        var act = async () => await _sut.DeleteCoverAsync("1");
+
+        // Assert
+        await act.Should().ThrowAsync<CoverNotFoundException>()
+            .WithMessage("Cover with id '1' was not found.");
+        _coversRepositoryMock.Verify(x => x.DeleteCoverAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        _auditServiceMock.Verify(x => x.AuditCoverAsync(It.IsAny<string>(), It.IsAny<HttpRequestType>()), Times.Never);
+    }
+
+    [Fact]
     public async Task DeleteCoverAsync_WhenCoverHasClaims_ShouldThrowCoverHasActiveClaimsException()
     {
         // Arrange
+        var cover = new Cover { Id = "1", StartDate = new DateTime(2026, 1, 1), EndDate = new DateTime(2026, 12, 31), Type = CoverType.Yacht };
         var existingClaims = new List<Claim>
         {
             new() { Id = "claim1", CoverId = "1", Name = "Active Claim", DamageCost = 1000, Type = ClaimType.Collision }
         };
+
+        _coversRepositoryMock
+            .Setup(x => x.GetCoverAsync("1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(cover);
         _claimRepositoryMock
             .Setup(x => x.GetClaimsByCoverIdAsync("1", It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingClaims);

@@ -23,8 +23,7 @@ public class CoversRepository(ClaimsContext _context) : ICoversRepository
     public async Task DeleteCoverAsync(string id, CancellationToken cancellationToken = default)
     {
         var cover = await GetCoverAsync(id, cancellationToken);
-        if (cover is null)
-            throw new CoverNotFoundException(id);
+        if (cover is null) return;
         _context.Covers.Remove(cover);
         await _context.SaveChangesAsync(cancellationToken);
     }
