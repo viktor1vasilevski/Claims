@@ -2,13 +2,12 @@
 using Claims.Application.Interfaces;
 using Claims.Domain.Enums;
 using Claims.Domain.Interfaces;
-using Claims.Domain.Models;
 using Claims.Infrastructure.BackgroundServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace Claims.Infrastructure.Tests;
+namespace Claims.Infrastructure.Tests.BackgroundServices;
 
 public class AuditBackgroundServiceTests
 {
