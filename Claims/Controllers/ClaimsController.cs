@@ -48,7 +48,7 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     /// <param name="cancellationToken">Token to cancel the request.</param>
     /// <returns>The created claim.</returns>
     [HttpPost]
-    [ProducesResponseType(typeof(ClaimDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ClaimDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ClaimDto>> CreateAsync(CreateClaimRequest request, CancellationToken cancellationToken)
     {

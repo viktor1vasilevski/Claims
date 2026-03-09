@@ -46,7 +46,7 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     /// <param name="request">The cover details.</param>
     /// <param name="cancellationToken">Token to cancel the request.</param>
     [HttpPost]
-    [ProducesResponseType(typeof(CoverDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(CoverDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CoverDto>> CreateAsync(CreateCoverRequest request, CancellationToken cancellationToken)
     {
@@ -69,16 +69,17 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     }
 
     /// <summary>
-    /// Computes the premium for a cover.
+    /// Computes the premium for a cover without creating it.
     /// </summary>
-    /// <param name="startDate">The cover start date.</param>
-    /// <param name="endDate">The cover end date.</param>
-    /// <param name="coverType">The type of cover.</param>
-    [HttpPost("compute")]
+    /// <param name="request">The cover details used to compute the premium.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The computed premium amount.</returns>
+    [HttpGet("compute")]
     [ProducesResponseType(typeof(decimal), StatusCodes.Status200OK)]
-    public async Task<ActionResult> ComputePremiumAsync(DateTime startDate, DateTime endDate, CoverType coverType)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> ComputePremiumAsync([FromQuery] ComputePremiumRequest request, CancellationToken cancellationToken)
     {
-        var result = await _coversService.ComputePremiumAsync(startDate, endDate, coverType);
+        var result = await _coversService.ComputePremiumAsync(request.StartDate, request.EndDate, request.Type);
         return Ok(result);
     }
 }
