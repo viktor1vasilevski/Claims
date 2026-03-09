@@ -50,10 +50,11 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(ClaimDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ClaimDto>> CreateAsync(CreateClaimRequest request, CancellationToken cancellationToken)
     {
         var claim = await _claimsService.CreateClaimAsync(request, cancellationToken);
-        return Ok(ClaimMapper.ToDto(claim));
+        return CreatedAtAction(nameof(GetAsync), new { id = claim.Id }, ClaimMapper.ToDto(claim));
     }
 
     /// <summary>
@@ -61,6 +62,7 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     /// </summary>
     /// <param name="id">The claim ID.</param>
     /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>No content if deleted, 404 if not found.</returns>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

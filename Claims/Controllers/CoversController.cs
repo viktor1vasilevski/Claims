@@ -18,6 +18,7 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     /// Retrieves all covers.
     /// </summary>
     /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>A list of all covers.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<CoverDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<CoverDto>>> GetAsync(CancellationToken cancellationToken)
@@ -31,6 +32,7 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     /// </summary>
     /// <param name="id">The cover ID.</param>
     /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The cover if found, otherwise 404 Not Found.</returns>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(CoverDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -45,13 +47,14 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     /// </summary>
     /// <param name="request">The cover details.</param>
     /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The created cover.</returns>
     [HttpPost]
     [ProducesResponseType(typeof(CoverDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CoverDto>> CreateAsync(CreateCoverRequest request, CancellationToken cancellationToken)
     {
         var cover = await _coversService.CreateCoverAsync(request, cancellationToken);
-        return Ok(CoverMapper.ToDto(cover));
+        return CreatedAtAction(nameof(GetAsync), new { id = cover.Id }, CoverMapper.ToDto(cover));
     }
 
     /// <summary>
@@ -59,9 +62,11 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     /// </summary>
     /// <param name="id">The cover ID.</param>
     /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>No content if deleted, 404 if not found, 409 if cover has active claims.</returns>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult> DeleteAsync(string id, CancellationToken cancellationToken)
     {
         await _coversService.DeleteCoverAsync(id, cancellationToken);
