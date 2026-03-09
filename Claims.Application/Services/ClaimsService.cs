@@ -47,6 +47,9 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
 
     public async Task DeleteClaimAsync(string id, CancellationToken cancellationToken = default)
     {
+        var claim = await _claimsRepository.GetClaimAsync(id, cancellationToken);
+        if (claim is null)
+            throw new ClaimNotFoundException(id);
         await _claimsRepository.DeleteClaimAsync(id, cancellationToken);
         await _auditService.AuditClaimAsync(id, HttpRequestType.DELETE);
     }

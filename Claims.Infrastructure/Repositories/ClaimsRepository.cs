@@ -1,5 +1,4 @@
-﻿using Claims.Domain.Exceptions;
-using Claims.Domain.Interfaces;
+﻿using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
 using Claims.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
@@ -23,8 +22,7 @@ public class ClaimsRepository(ClaimsContext _context) : IClaimsRepository
     public async Task DeleteClaimAsync(string id, CancellationToken cancellationToken = default)
     {
         var claim = await GetClaimAsync(id, cancellationToken);
-        if (claim is null)
-            throw new ClaimNotFoundException(id);
+        if (claim is null) return;
         _context.Claims.Remove(claim);
         await _context.SaveChangesAsync(cancellationToken);
     }

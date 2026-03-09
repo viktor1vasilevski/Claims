@@ -157,6 +157,11 @@ public class ClaimsServiceTests
     public async Task DeleteClaimAsync_ShouldDeleteClaimAndAudit()
     {
         // Arrange
+        var claim = new Claim { Id = "1", CoverId = "c1", Name = "Test", DamageCost = 1000, Type = ClaimType.Collision };
+
+        _claimsRepositoryMock
+            .Setup(x => x.GetClaimAsync("1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(claim);
         _claimsRepositoryMock
             .Setup(x => x.DeleteClaimAsync("1", It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
@@ -167,5 +172,23 @@ public class ClaimsServiceTests
         // Assert
         _claimsRepositoryMock.Verify(x => x.DeleteClaimAsync("1", It.IsAny<CancellationToken>()), Times.Once);
         _auditServiceMock.Verify(x => x.AuditClaimAsync("1", HttpRequestType.DELETE), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteClaimAsync_WhenClaimDoesNotExist_ShouldThrowClaimNotFoundException()
+    {
+        // Arrange
+        _claimsRepositoryMock
+            .Setup(x => x.GetClaimAsync("1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Claim?)null);
+
+        // Act
+        var act = async () => await _sut.DeleteClaimAsync("1");
+
+        // Assert
+        await act.Should().ThrowAsync<ClaimNotFoundException>()
+            .WithMessage("Claim with id '1' was not found.");
+        _claimsRepositoryMock.Verify(x => x.DeleteClaimAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        _auditServiceMock.Verify(x => x.AuditClaimAsync(It.IsAny<string>(), It.IsAny<HttpRequestType>()), Times.Never);
     }
 }

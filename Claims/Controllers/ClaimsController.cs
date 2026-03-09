@@ -20,7 +20,6 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     /// <returns>A list of claims.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<ClaimDto>), StatusCodes.Status200OK)]
-    [HttpGet]
     public async Task<ActionResult<IEnumerable<ClaimDto>>> GetAsync(CancellationToken cancellationToken)
     {
         var claims = await _claimsService.GetClaimsAsync(cancellationToken);
