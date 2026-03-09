@@ -13,7 +13,7 @@ public class YachtRateStrategy : IPremiumRateStrategy
     public decimal GetDiscount(int dayIndex) => dayIndex switch
     {
         < PremiumConstants.FirstPeriodDays => 0m,
-        < PremiumConstants.SecondPeriodDays => PremiumConstants.YachtFirstDiscount,
-        _ => PremiumConstants.YachtSecondDiscount
+        < PremiumConstants.FirstPeriodDays + PremiumConstants.SecondPeriodDays => PremiumConstants.YachtFirstDiscount,
+        _ => PremiumConstants.YachtFirstDiscount + PremiumConstants.YachtAdditionalDiscount
     };
 }
