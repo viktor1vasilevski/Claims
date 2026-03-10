@@ -12,7 +12,7 @@ public class CreateCoverRequestValidator : AbstractValidator<CreateCoverRequest>
             .WithMessage("Cover type is invalid.");
 
         RuleFor(x => x.StartDate)
-            .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
+            .GreaterThanOrEqualTo(_ => DateTime.UtcNow.Date)
             .WithMessage("StartDate cannot be in the past.");
 
         RuleFor(x => x.EndDate)
