@@ -1,12 +1,13 @@
-﻿using Claims.Domain.Exceptions;
+using Claims.Domain.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Claims.Api.Middlewares;
 
 /// <summary>
 /// Handles exceptions globally and returns appropriate HTTP responses.
 /// </summary>
-public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
+public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IProblemDetailsService problemDetailsService) : IExceptionHandler
 {
     /// <summary>
     /// Tries to handle the exception and write the response.
@@ -68,14 +69,16 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
         }
 
         httpContext.Response.StatusCode = statusCode;
-        httpContext.Response.ContentType = "application/json";
 
-        await httpContext.Response.WriteAsJsonAsync(new
+        return await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
-            status = statusCode,
-            message
-        }, cancellationToken);
-
-        return true;
+            HttpContext = httpContext,
+            Exception = exception,
+            ProblemDetails = new ProblemDetails
+            {
+                Status = statusCode,
+                Detail = message
+            }
+        });
     }
 }
