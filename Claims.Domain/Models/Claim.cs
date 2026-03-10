@@ -4,7 +4,7 @@ namespace Claims.Domain.Models;
 
 public class Claim
 {
-    public string? Id { get; set; }
+    public string Id { get; set; } = Guid.NewGuid().ToString();
     public required string CoverId { get; set; }
     public DateTime Created { get; set; }
     public required string Name { get; set; }

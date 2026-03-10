@@ -20,7 +20,6 @@ public class CoversService(ICoversRepository coversRepository, IClaimsRepository
     {
         var cover = new Cover
         {
-            Id = Guid.NewGuid().ToString(),
             StartDate = request.StartDate,
             EndDate = request.EndDate,
             Type = request.Type,

@@ -28,7 +28,6 @@ public class ClaimsService(IClaimsRepository claimsRepository, IAuditService aud
 
         var claim = new Claim
         {
-            Id = Guid.NewGuid().ToString(),
             CoverId = request.CoverId,
             Created = request.Created,
             Name = request.Name,
