@@ -1,22 +1,12 @@
-﻿using Claims.Domain.Enums;
-using MongoDB.Bson.Serialization.Attributes;
+using Claims.Domain.Enums;
 
 namespace Claims.Domain.Models;
 
 public class Cover
 {
-    [BsonId]
     public string? Id { get; set; }
-
-    [BsonElement("startDate")]
     public DateTime StartDate { get; set; }
-
-    [BsonElement("endDate")]
     public DateTime EndDate { get; set; }
-
-    [BsonElement("coverType")]
     public CoverType Type { get; set; }
-
-    [BsonElement("premium")]
     public decimal Premium { get; set; }
 }

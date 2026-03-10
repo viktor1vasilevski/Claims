@@ -14,14 +14,16 @@ public class ClaimsContext(DbContextOptions options) : DbContext(options)
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<Claim>().ToCollection("claims");
+        modelBuilder.Entity<Claim>().Property(x => x.CoverId).HasElementName("coverId");
+        modelBuilder.Entity<Claim>().Property(x => x.Created).HasElementName("created");
+        modelBuilder.Entity<Claim>().Property(x => x.Name).HasElementName("name");
+        modelBuilder.Entity<Claim>().Property(x => x.DamageCost).HasElementName("damageCost");
+        modelBuilder.Entity<Claim>().Property(x => x.Type).HasElementName("claimType").HasConversion<string>();
+
         modelBuilder.Entity<Cover>().ToCollection("covers");
-
-        modelBuilder.Entity<Cover>()
-            .Property(x => x.Type)
-            .HasConversion<string>();
-
-        modelBuilder.Entity<Claim>()
-            .Property(x => x.Type)
-            .HasConversion<string>();
+        modelBuilder.Entity<Cover>().Property(x => x.StartDate).HasElementName("startDate");
+        modelBuilder.Entity<Cover>().Property(x => x.EndDate).HasElementName("endDate");
+        modelBuilder.Entity<Cover>().Property(x => x.Premium).HasElementName("premium");
+        modelBuilder.Entity<Cover>().Property(x => x.Type).HasElementName("coverType").HasConversion<string>();
     }
 }
