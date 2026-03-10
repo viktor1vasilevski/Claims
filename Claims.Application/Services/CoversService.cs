@@ -11,10 +11,7 @@ public class CoversService(ICoversRepository _coversRepository, IClaimsRepositor
     IAuditService _auditService, IPremiumCalculator _premiumCalculator) : ICoversService
 {
     public async Task<IReadOnlyList<Cover>> GetCoversAsync(CancellationToken cancellationToken = default)
-    {
-        var covers = await _coversRepository.GetCoversAsync(cancellationToken);
-        return covers.ToList();
-    }
+        => await _coversRepository.GetCoversAsync(cancellationToken);
 
     public async Task<Cover?> GetCoverByIdAsync(string id, CancellationToken cancellationToken = default)
         => await _coversRepository.GetCoverByIdAsync(id, cancellationToken);

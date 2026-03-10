@@ -11,10 +11,7 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
     ICoversRepository _coversRepository) : IClaimsService
 {
     public async Task<IReadOnlyList<Claim>> GetClaimsAsync(CancellationToken cancellationToken = default)
-    {
-        var claims = await _claimsRepository.GetClaimsAsync(cancellationToken);
-        return claims.ToList();
-    }
+        => await _claimsRepository.GetClaimsAsync(cancellationToken);
 
     public async Task<Claim?> GetClaimByIdAsync(string id, CancellationToken cancellationToken = default)
         => await _claimsRepository.GetClaimByIdAsync(id, cancellationToken);
