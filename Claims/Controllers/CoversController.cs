@@ -76,14 +76,13 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     /// Computes the premium for a cover without creating it.
     /// </summary>
     /// <param name="request">The cover details used to compute the premium.</param>
-    /// <param name="cancellationToken">Token to cancel the request.</param>
     /// <returns>The computed premium amount.</returns>
     [HttpGet("compute")]
     [ProducesResponseType(typeof(decimal), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> ComputePremium([FromQuery] ComputePremiumRequest request, CancellationToken cancellationToken)
+    public ActionResult ComputePremium([FromQuery] ComputePremiumRequest request)
     {
-        var result = await _coversService.ComputePremiumAsync(request);
+        var result = _coversService.ComputePremium(request);
         return Ok(result);
     }
 }

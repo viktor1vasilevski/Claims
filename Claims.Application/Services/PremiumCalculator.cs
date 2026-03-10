@@ -7,7 +7,7 @@ namespace Claims.Application.Services;
 
 public class PremiumCalculator(IEnumerable<IPremiumRateStrategy> _strategies) : IPremiumCalculator
 {
-    public Task<decimal> ComputeAsync(DateTime startDate, DateTime endDate, CoverType coverType)
+    public decimal Compute(DateTime startDate, DateTime endDate, CoverType coverType)
     {
         var strategy = _strategies.FirstOrDefault(s => s.CoverType == coverType)
             ?? throw new PremiumStrategyNotFoundException(coverType);
@@ -22,6 +22,6 @@ public class PremiumCalculator(IEnumerable<IPremiumRateStrategy> _strategies) : 
             totalPremium += premiumPerDay - premiumPerDay * discount;
         }
 
-        return Task.FromResult(totalPremium);
+        return totalPremium;
     }
 }

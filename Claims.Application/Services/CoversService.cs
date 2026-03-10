@@ -24,7 +24,7 @@ public class CoversService(ICoversRepository _coversRepository, IClaimsRepositor
             StartDate = request.StartDate,
             EndDate = request.EndDate,
             Type = request.Type,
-            Premium = await _premiumCalculator.ComputeAsync(request.StartDate, request.EndDate, request.Type)
+            Premium = _premiumCalculator.Compute(request.StartDate, request.EndDate, request.Type)
         };
         await _coversRepository.CreateCoverAsync(cover, cancellationToken);
         await _auditService.AuditCoverAsync(cover.Id, HttpRequestType.POST);
@@ -46,6 +46,6 @@ public class CoversService(ICoversRepository _coversRepository, IClaimsRepositor
         await _auditService.AuditCoverAsync(id, HttpRequestType.DELETE);
     }
 
-    public Task<decimal> ComputePremiumAsync(ComputePremiumRequest request)
-        => _premiumCalculator.ComputeAsync(request.StartDate, request.EndDate, request.Type);
+    public decimal ComputePremium(ComputePremiumRequest request)
+        => _premiumCalculator.Compute(request.StartDate, request.EndDate, request.Type);
 }

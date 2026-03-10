@@ -27,8 +27,8 @@ public class CoversServiceTests
             _premiumCalculatorMock.Object);
 
         _premiumCalculatorMock
-            .Setup(x => x.ComputeAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CoverType>()))
-            .ReturnsAsync(50000m);
+            .Setup(x => x.Compute(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CoverType>()))
+            .Returns(50000m);
     }
 
     [Fact]

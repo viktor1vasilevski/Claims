@@ -35,12 +35,12 @@ public class PremiumCalculatorTests
     [InlineData(CoverType.PassengerShip, 181, 266955)]
     [InlineData(CoverType.Tanker, 181, 333693.75)]
     [InlineData(CoverType.Yacht, 181, 238452.5)]
-    public async Task ComputeAsync_ShouldReturnCorrectPremium(CoverType coverType, int days, decimal expectedPremium)
+    public void Compute_ShouldReturnCorrectPremium(CoverType coverType, int days, decimal expectedPremium)
     {
         var startDate = new DateTime(2026, 1, 1);
         var endDate = startDate.AddDays(days);
 
-        var result = await _sut.ComputeAsync(startDate, endDate, coverType);
+        var result = _sut.Compute(startDate, endDate, coverType);
 
         result.Should().Be(expectedPremium);
     }

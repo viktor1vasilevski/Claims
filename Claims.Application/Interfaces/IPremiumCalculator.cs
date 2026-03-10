@@ -4,5 +4,5 @@ namespace Claims.Application.Interfaces;
 
 public interface IPremiumCalculator
 {
-    Task<decimal> ComputeAsync(DateTime startDate, DateTime endDate, CoverType coverType);
+    decimal Compute(DateTime startDate, DateTime endDate, CoverType coverType);
 }
