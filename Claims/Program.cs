@@ -1,8 +1,10 @@
 using Claims.Api.Extensions;
 using Claims.Api.Middlewares;
 using Claims.Application.Extensions;
+using Claims.Application.Validations.Cover;
 using Claims.Infrastructure.Context;
 using Claims.Infrastructure.Extensions;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
@@ -41,6 +43,7 @@ builder.Services.AddDbContexts(sqlConnectionString, mongoConnectionString, build
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 
+builder.Services.AddValidatorsFromAssemblyContaining<CreateCoverRequestValidator>(ServiceLifetime.Transient);
 builder.Services.AddFluentValidationAutoValidation();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
