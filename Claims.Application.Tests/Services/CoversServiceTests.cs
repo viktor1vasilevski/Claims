@@ -119,7 +119,7 @@ public class CoversServiceTests
             .Returns(Task.CompletedTask);
         _claimRepositoryMock
             .Setup(x => x.GetClaimsByCoverIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Enumerable.Empty<Claim>());
+            .ReturnsAsync(new List<Claim>());
 
         // Act
         await _sut.DeleteCoverAsync("1");

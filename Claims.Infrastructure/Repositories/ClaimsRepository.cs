@@ -25,6 +25,6 @@ public class ClaimsRepository(ClaimsContext _context) : IClaimsRepository
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Claim>> GetClaimsByCoverIdAsync(string coverId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<Claim>> GetClaimsByCoverIdAsync(string coverId, CancellationToken cancellationToken = default)
         => await _context.Claims.Where(c => c.CoverId == coverId).ToListAsync(cancellationToken);
 }
