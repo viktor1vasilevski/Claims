@@ -77,7 +77,7 @@ public class CoversController(ICoversService coversService) : ControllerBase
     /// </summary>
     /// <param name="request">The cover details used to compute the premium.</param>
     /// <returns>The computed premium amount.</returns>
-    [HttpGet("compute")]
+    [HttpGet("premium")]
     [ProducesResponseType(typeof(decimal), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public ActionResult ComputePremium([FromQuery] ComputePremiumRequest request)
