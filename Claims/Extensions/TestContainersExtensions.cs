@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+#if DEBUG
+using System.Runtime.InteropServices;
 using Testcontainers.MongoDb;
 using Testcontainers.MsSql;
 
@@ -30,3 +31,4 @@ public static class TestContainersExtensions
         return (sqlContainer.GetConnectionString(), mongoContainer.GetConnectionString());
     }
 }
+#endif
