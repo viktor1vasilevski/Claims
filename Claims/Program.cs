@@ -5,6 +5,7 @@ using Claims.Infrastructure.Context;
 using Claims.Infrastructure.Extensions;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,6 +46,10 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+builder.Services.AddHealthChecks()
+    .AddSqlServer(sqlConnectionString, name: "sql-server")
+    .AddMongoDb(_ => new MongoClient(mongoConnectionString), name: "mongodb");
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -60,6 +65,7 @@ app.UseExceptionHandler();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 using (var scope = app.Services.CreateScope())
 {
