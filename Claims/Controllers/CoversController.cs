@@ -11,7 +11,7 @@ namespace Claims.Controllers;
 /// </summary>
 [ApiController]
 [Route("[controller]")]
-public class CoversController(ICoversService _coversService) : ControllerBase
+public class CoversController(ICoversService coversService) : ControllerBase
 {
     /// <summary>
     /// Retrieves all covers.
@@ -22,7 +22,7 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     [ProducesResponseType(typeof(IReadOnlyList<CoverDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<CoverDto>>> Get(CancellationToken cancellationToken)
     {
-        var covers = await _coversService.GetCoversAsync(cancellationToken);
+        var covers = await coversService.GetCoversAsync(cancellationToken);
         return Ok(covers.Select(CoverMapper.ToDto));
     }
 
@@ -37,7 +37,7 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CoverDto>> GetById(string id, CancellationToken cancellationToken)
     {
-        var cover = await _coversService.GetCoverByIdAsync(id, cancellationToken);
+        var cover = await coversService.GetCoverByIdAsync(id, cancellationToken);
         return cover is null ? NotFound() : Ok(CoverMapper.ToDto(cover));
     }
 
@@ -52,7 +52,7 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CoverDto>> Create(CreateCoverRequest request, CancellationToken cancellationToken)
     {
-        var cover = await _coversService.CreateCoverAsync(request, cancellationToken);
+        var cover = await coversService.CreateCoverAsync(request, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = cover.Id }, CoverMapper.ToDto(cover));
     }
 
@@ -68,7 +68,7 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult> Delete(string id, CancellationToken cancellationToken)
     {
-        await _coversService.DeleteCoverAsync(id, cancellationToken);
+        await coversService.DeleteCoverAsync(id, cancellationToken);
         return NoContent();
     }
 
@@ -82,7 +82,7 @@ public class CoversController(ICoversService _coversService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public ActionResult ComputePremium([FromQuery] ComputePremiumRequest request)
     {
-        var result = _coversService.ComputePremium(request);
+        var result = coversService.ComputePremium(request);
         return Ok(result);
     }
 }

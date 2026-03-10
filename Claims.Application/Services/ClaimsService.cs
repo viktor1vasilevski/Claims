@@ -1,4 +1,4 @@
-﻿using Claims.Application.Interfaces;
+using Claims.Application.Interfaces;
 using Claims.Application.Requests.Claims;
 using Claims.Domain.Enums;
 using Claims.Domain.Exceptions;
@@ -7,18 +7,18 @@ using Claims.Domain.Models;
 
 namespace Claims.Application.Services;
 
-public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _auditService, 
-    ICoversRepository _coversRepository) : IClaimsService
+public class ClaimsService(IClaimsRepository claimsRepository, IAuditService auditService,
+    ICoversRepository coversRepository) : IClaimsService
 {
     public async Task<IReadOnlyList<Claim>> GetClaimsAsync(CancellationToken cancellationToken = default)
-        => await _claimsRepository.GetClaimsAsync(cancellationToken);
+        => await claimsRepository.GetClaimsAsync(cancellationToken);
 
     public async Task<Claim?> GetClaimByIdAsync(string id, CancellationToken cancellationToken = default)
-        => await _claimsRepository.GetClaimByIdAsync(id, cancellationToken);
+        => await claimsRepository.GetClaimByIdAsync(id, cancellationToken);
 
     public async Task<Claim> CreateClaimAsync(CreateClaimRequest request, CancellationToken cancellationToken = default)
     {
-        var cover = await _coversRepository.GetCoverByIdAsync(request.CoverId, cancellationToken);
+        var cover = await coversRepository.GetCoverByIdAsync(request.CoverId, cancellationToken);
 
         if (cover is null)
             throw new CoverNotFoundException(request.CoverId);
@@ -36,18 +36,18 @@ public class ClaimsService(IClaimsRepository _claimsRepository, IAuditService _a
             DamageCost = request.DamageCost
         };
 
-        await _claimsRepository.CreateClaimAsync(claim, cancellationToken);
-        await _auditService.AuditClaimAsync(claim.Id, HttpRequestType.POST);
+        await claimsRepository.CreateClaimAsync(claim, cancellationToken);
+        await auditService.AuditClaimAsync(claim.Id, HttpRequestType.POST);
 
         return claim;
     }
 
     public async Task DeleteClaimAsync(string id, CancellationToken cancellationToken = default)
     {
-        var claim = await _claimsRepository.GetClaimByIdAsync(id, cancellationToken);
+        var claim = await claimsRepository.GetClaimByIdAsync(id, cancellationToken);
         if (claim is null)
             throw new ClaimNotFoundException(id);
-        await _claimsRepository.DeleteClaimAsync(claim, cancellationToken);
-        await _auditService.AuditClaimAsync(id, HttpRequestType.DELETE);
+        await claimsRepository.DeleteClaimAsync(claim, cancellationToken);
+        await auditService.AuditClaimAsync(id, HttpRequestType.DELETE);
     }
 }

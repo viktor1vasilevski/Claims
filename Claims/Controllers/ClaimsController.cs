@@ -11,7 +11,7 @@ namespace Claims.Controllers;
 /// </summary>
 [ApiController]
 [Route("[controller]")]
-public class ClaimsController(IClaimsService _claimsService) : ControllerBase
+public class ClaimsController(IClaimsService claimsService) : ControllerBase
 {
     /// <summary>
     /// Retrieves all claims.
@@ -22,7 +22,7 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     [ProducesResponseType(typeof(IReadOnlyList<ClaimDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<ClaimDto>>> Get(CancellationToken cancellationToken)
     {
-        var claims = await _claimsService.GetClaimsAsync(cancellationToken);
+        var claims = await claimsService.GetClaimsAsync(cancellationToken);
         return Ok(claims.Select(ClaimMapper.ToDto));
     }
 
@@ -37,7 +37,7 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ClaimDto>> GetById(string id, CancellationToken cancellationToken)
     {
-        var claim = await _claimsService.GetClaimByIdAsync(id, cancellationToken);
+        var claim = await claimsService.GetClaimByIdAsync(id, cancellationToken);
         return claim is null ? NotFound() : Ok(ClaimMapper.ToDto(claim));
     }
 
@@ -53,7 +53,7 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ClaimDto>> Create(CreateClaimRequest request, CancellationToken cancellationToken)
     {
-        var claim = await _claimsService.CreateClaimAsync(request, cancellationToken);
+        var claim = await claimsService.CreateClaimAsync(request, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = claim.Id }, ClaimMapper.ToDto(claim));
     }
 
@@ -68,7 +68,7 @@ public class ClaimsController(IClaimsService _claimsService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(string id, CancellationToken cancellationToken)
     {
-        await _claimsService.DeleteClaimAsync(id, cancellationToken);
+        await claimsService.DeleteClaimAsync(id, cancellationToken);
         return NoContent();
     }
 }
