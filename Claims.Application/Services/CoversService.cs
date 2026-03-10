@@ -42,7 +42,7 @@ public class CoversService(ICoversRepository _coversRepository, IClaimsRepositor
         if (claims.Any())
             throw new CoverHasActiveClaimsException(id);
 
-        await _coversRepository.DeleteCoverAsync(id, cancellationToken);
+        await _coversRepository.DeleteCoverAsync(cover, cancellationToken);
         await _auditService.AuditCoverAsync(id, HttpRequestType.DELETE);
     }
 

@@ -19,10 +19,8 @@ public class ClaimsRepository(ClaimsContext _context) : IClaimsRepository
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteClaimAsync(string id, CancellationToken cancellationToken = default)
+    public async Task DeleteClaimAsync(Claim claim, CancellationToken cancellationToken = default)
     {
-        var claim = await GetClaimByIdAsync(id, cancellationToken);
-        if (claim is null) return;
         _context.Claims.Remove(claim);
         await _context.SaveChangesAsync(cancellationToken);
     }

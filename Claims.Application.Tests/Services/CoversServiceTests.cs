@@ -115,7 +115,7 @@ public class CoversServiceTests
             .Setup(x => x.GetCoverByIdAsync("1", It.IsAny<CancellationToken>()))
             .ReturnsAsync(cover);
         _coversRepositoryMock
-            .Setup(x => x.DeleteCoverAsync("1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.DeleteCoverAsync(cover, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
         _claimRepositoryMock
             .Setup(x => x.GetClaimsByCoverIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -125,7 +125,7 @@ public class CoversServiceTests
         await _sut.DeleteCoverAsync("1");
 
         // Assert
-        _coversRepositoryMock.Verify(x => x.DeleteCoverAsync("1", It.IsAny<CancellationToken>()), Times.Once);
+        _coversRepositoryMock.Verify(x => x.DeleteCoverAsync(cover, It.IsAny<CancellationToken>()), Times.Once);
         _auditServiceMock.Verify(x => x.AuditCoverAsync("1", HttpRequestType.DELETE), Times.Once);
     }
 
@@ -143,7 +143,7 @@ public class CoversServiceTests
         // Assert
         await act.Should().ThrowAsync<CoverNotFoundException>()
             .WithMessage("Cover with id '1' was not found.");
-        _coversRepositoryMock.Verify(x => x.DeleteCoverAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        _coversRepositoryMock.Verify(x => x.DeleteCoverAsync(It.IsAny<Cover>(), It.IsAny<CancellationToken>()), Times.Never);
         _auditServiceMock.Verify(x => x.AuditCoverAsync(It.IsAny<string>(), It.IsAny<HttpRequestType>()), Times.Never);
     }
 
@@ -169,7 +169,7 @@ public class CoversServiceTests
 
         // Assert
         await act.Should().ThrowAsync<CoverHasActiveClaimsException>();
-        _coversRepositoryMock.Verify(x => x.DeleteCoverAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        _coversRepositoryMock.Verify(x => x.DeleteCoverAsync(It.IsAny<Cover>(), It.IsAny<CancellationToken>()), Times.Never);
         _auditServiceMock.Verify(x => x.AuditCoverAsync(It.IsAny<string>(), It.IsAny<HttpRequestType>()), Times.Never);
     }
 }
