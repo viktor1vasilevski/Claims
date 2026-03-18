@@ -68,4 +68,39 @@ public class AuditBackgroundServiceTests
             It.IsAny<CancellationToken>()),
             Times.Once);
     }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenProcessorThrows_ShouldLogErrorAndContinue()
+    {
+        // Arrange
+        var sut = CreateSut();
+        var cts = new CancellationTokenSource();
+
+        _processorMock
+            .Setup(x => x.ProcessAsync(It.IsAny<IAuditRepository>(), It.IsAny<AuditMessage>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("Processing failed"));
+
+        // Act
+        var task = sut.StartAsync(cts.Token);
+        await _auditChannel.Writer.WriteAsync(new AuditMessage("123", HttpRequestType.POST, AuditEntityType.Claim));
+        await _auditChannel.Writer.WriteAsync(new AuditMessage("456", HttpRequestType.POST, AuditEntityType.Claim));
+        await Task.Delay(100);
+        await cts.CancelAsync();
+
+        // Assert - both messages were attempted despite the first throwing
+        _processorMock.Verify(x => x.ProcessAsync(
+            It.IsAny<IAuditRepository>(),
+            It.IsAny<AuditMessage>(),
+            It.IsAny<CancellationToken>()),
+            Times.Exactly(2));
+
+        _loggerMock.Verify(
+            x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => true),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Exactly(2));
+    }
 }

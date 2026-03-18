@@ -1,7 +1,7 @@
 using Claims.Api.Extensions;
 using Claims.Api.Middlewares;
 using Claims.Application.Extensions;
-using Claims.Application.Validations.Cover;
+using Claims.Application.Validations.Claims;
 using Claims.Infrastructure.Context;
 using Claims.Infrastructure.Extensions;
 using FluentValidation;
@@ -43,7 +43,7 @@ builder.Services.AddDbContexts(sqlConnectionString, mongoConnectionString, build
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 
-builder.Services.AddValidatorsFromAssemblyContaining<CreateCoverRequestValidator>(ServiceLifetime.Transient);
+builder.Services.AddValidatorsFromAssemblyContaining<CreateClaimRequestValidator>(ServiceLifetime.Transient);
 builder.Services.AddFluentValidationAutoValidation();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -64,8 +64,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseExceptionHandler();
-
-app.UseAuthorization();
 
 app.MapControllers();
 app.MapHealthChecks("/health");

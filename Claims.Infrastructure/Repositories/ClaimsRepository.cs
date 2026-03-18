@@ -11,7 +11,7 @@ public class ClaimsRepository(ClaimsContext context) : IClaimsRepository
         => await context.Claims.ToListAsync(cancellationToken);
 
     public async Task<Claim?> GetClaimByIdAsync(string id, CancellationToken cancellationToken = default)
-        => await context.Claims.FindAsync(id, cancellationToken);
+        => await context.Claims.FindAsync([id], cancellationToken);
 
     public async Task CreateClaimAsync(Claim claim, CancellationToken cancellationToken = default)
     {

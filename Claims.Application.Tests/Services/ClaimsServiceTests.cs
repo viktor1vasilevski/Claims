@@ -123,6 +123,34 @@ public class ClaimsServiceTests
     }
 
     [Fact]
+    public async Task CreateClaimAsync_WhenCreatedDateAfterCoverEndDate_ShouldThrowClaimDateOutOfRangeException()
+    {
+        // Arrange
+        var cover = new Cover
+        {
+            Id = "c1",
+            StartDate = new DateTime(2026, 1, 1),
+            EndDate = new DateTime(2026, 12, 31)
+        };
+        var request = new CreateClaimRequest
+        {
+            CoverId = "c1",
+            Created = new DateTime(2027, 1, 1),
+            Name = "Test",
+        };
+        _coversRepositoryMock
+            .Setup(x => x.GetCoverByIdAsync("c1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(cover);
+
+        // Act
+        var act = async () => await _sut.CreateClaimAsync(request);
+
+        // Assert
+        await act.Should().ThrowAsync<ClaimDateOutOfRangeException>()
+            .WithMessage("Created date must be within the Cover period.");
+    }
+
+    [Fact]
     public async Task CreateClaimAsync_WhenValid_ShouldCreateClaimAndAudit()
     {
         // Arrange

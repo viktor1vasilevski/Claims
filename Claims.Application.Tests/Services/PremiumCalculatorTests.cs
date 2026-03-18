@@ -1,6 +1,7 @@
 ﻿using Claims.Application.Services;
 using Claims.Application.Strategies;
 using Claims.Domain.Enums;
+using Claims.Domain.Exceptions;
 using FluentAssertions;
 
 namespace Claims.Application.Tests.Services;
@@ -29,7 +30,7 @@ public class PremiumCalculatorTests
     [InlineData(CoverType.PassengerShip, 31, 46470)]
     [InlineData(CoverType.Tanker, 31, 58087.5)]
     [InlineData(CoverType.Yacht, 31, 42556.25)]
-    // Cross into thirt period - second discount applies
+    // Cross into third period - second discount applies
     [InlineData(CoverType.BulkCarrier, 181, 289201.25)]
     [InlineData(CoverType.ContainerShip, 181, 289201.25)]
     [InlineData(CoverType.PassengerShip, 181, 266955)]
@@ -43,5 +44,17 @@ public class PremiumCalculatorTests
         var result = _sut.Compute(startDate, endDate, coverType);
 
         result.Should().Be(expectedPremium);
+    }
+
+    [Fact]
+    public void Compute_WhenCoverTypeHasNoStrategy_ShouldThrowPremiumStrategyNotFoundException()
+    {
+        var unknownCoverType = (CoverType)99;
+        var startDate = new DateTime(2026, 1, 1);
+        var endDate = startDate.AddDays(30);
+
+        var act = () => _sut.Compute(startDate, endDate, unknownCoverType);
+
+        act.Should().Throw<PremiumStrategyNotFoundException>();
     }
 }

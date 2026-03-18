@@ -60,6 +60,18 @@ public class CreateCoverRequestValidatorTests
     }
 
     [Fact]
+    public async Task Validate_WhenEndDateEqualsStartDate_ShouldFailWithMessage()
+    {
+        var request = ValidRequest();
+        request.EndDate = request.StartDate;
+
+        var result = await _sut.ValidateAsync(request);
+
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().ContainSingle(x => x.ErrorMessage == "EndDate must be after StartDate.");
+    }
+
+    [Fact]
     public async Task Validate_WhenInsurancePeriodExceedsOneYear_ShouldFailWithMessage()
     {
         var request = ValidRequest();
@@ -69,5 +81,16 @@ public class CreateCoverRequestValidatorTests
 
         result.IsValid.Should().BeFalse();
         result.Errors.Should().ContainSingle(x => x.ErrorMessage == "Insurance period cannot exceed 1 year.");
+    }
+
+    [Fact]
+    public async Task Validate_WhenInsurancePeriodIsExactlyOneYear_ShouldPassValidation()
+    {
+        var request = ValidRequest();
+        request.EndDate = request.StartDate.AddDays(365);
+
+        var result = await _sut.ValidateAsync(request);
+
+        result.IsValid.Should().BeTrue();
     }
 }
