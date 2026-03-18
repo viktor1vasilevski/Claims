@@ -43,12 +43,6 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IPro
                 message = ex.Message;
                 break;
 
-            case UnhandledAuditEntityTypeException ex:
-                logger.LogError(ex, "Unhandled audit entity type: {Message}", ex.Message);
-                statusCode = StatusCodes.Status500InternalServerError;
-                message = ex.Message;
-                break;
-
             case ClaimNotFoundException ex:
                 logger.LogWarning(ex, "Claim not found: {Message}", ex.Message);
                 statusCode = StatusCodes.Status404NotFound;

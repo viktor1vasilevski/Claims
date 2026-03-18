@@ -14,8 +14,5 @@ public class CoverHasActiveClaimsException(string coverId)
 public class PremiumStrategyNotFoundException(CoverType coverType)
     : Exception($"No premium strategy found for cover type {coverType}.");
 
-public class UnhandledAuditEntityTypeException(AuditEntityType entityType)
-    : Exception($"Unhandled audit entity type: {entityType}");
-
 public class ClaimNotFoundException(string id)
     : Exception($"Claim with id '{id}' was not found.");
