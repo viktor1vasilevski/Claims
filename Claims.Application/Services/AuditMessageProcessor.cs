@@ -1,6 +1,7 @@
 ﻿using Claims.Application.Channels;
 using Claims.Application.Interfaces;
 using Claims.Domain.Enums;
+using Claims.Domain.Exceptions;
 using Claims.Domain.Interfaces;
 using Claims.Domain.Models;
 
@@ -23,6 +24,6 @@ public class AuditMessageProcessor : IAuditMessageProcessor
                 Created = DateTime.UtcNow,
                 HttpRequestType = message.HttpRequestType
             }, cancellationToken),
-             _ => throw new ArgumentOutOfRangeException(nameof(message.EntityType), message.EntityType, "Unhandled audit entity type")
+             _ => throw new UnhandledAuditEntityTypeException(message.EntityType)
         };
 }
