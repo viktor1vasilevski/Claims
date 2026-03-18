@@ -22,6 +22,7 @@ public class AuditMessageProcessor : IAuditMessageProcessor
                 CoverId = message.Id,
                 Created = DateTime.UtcNow,
                 HttpRequestType = message.HttpRequestType
-            }, cancellationToken)
+            }, cancellationToken),
+             _ => throw new ArgumentOutOfRangeException(nameof(message.EntityType), message.EntityType, "Unhandled audit entity type")
         };
 }

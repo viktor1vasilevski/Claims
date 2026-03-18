@@ -49,6 +49,12 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IPro
                 message = ex.Message;
                 break;
 
+            case ArgumentOutOfRangeException ex:
+                logger.LogError(ex, "Argument out of range: {Message}", ex.Message);
+                statusCode = StatusCodes.Status500InternalServerError;
+                message = ex.Message;
+                break;
+
             default:
                 logger.LogError(exception, "Unhandled exception");
                 statusCode = StatusCodes.Status500InternalServerError;
