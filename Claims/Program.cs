@@ -16,11 +16,13 @@ builder.Services.AddSwaggerDocumentation();
 
 string sqlConnectionString, mongoConnectionString;
 
+#if DEBUG
 if (builder.Configuration.GetValue<bool>("UseTestContainers"))
 {
     (sqlConnectionString, mongoConnectionString) = await TestContainersExtensions.StartContainersAsync();
 }
 else
+#endif
 {
     sqlConnectionString = builder.Configuration.GetConnectionString("SqlServer")!;
     mongoConnectionString = builder.Configuration.GetConnectionString("MongoDb")!;
