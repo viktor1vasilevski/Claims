@@ -23,11 +23,12 @@ public static class DbContextExtensions
         services.AddDbContext<AuditContext>(options =>
             options.UseSqlServer(sqlConnectionString));
 
-        services.AddDbContext<ClaimsContext>(options =>
+        services.AddSingleton<IMongoClient>(new MongoClient(mongoConnectionString));
+
+        services.AddDbContext<ClaimsContext>((serviceProvider, options) =>
         {
-            var client = new MongoClient(mongoConnectionString);
-            var database = client.GetDatabase(mongoDatabaseName);
-            options.UseMongoDB(database.Client, database.DatabaseNamespace.DatabaseName);
+            var client = serviceProvider.GetRequiredService<IMongoClient>();
+            options.UseMongoDB(client, mongoDatabaseName);
         });
 
         return services;
