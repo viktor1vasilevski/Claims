@@ -49,12 +49,6 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IPro
                 message = ex.Message;
                 break;
 
-            case ArgumentException ex:
-                logger.LogWarning(ex, "Validation failed: {Message}", ex.Message);
-                statusCode = StatusCodes.Status400BadRequest;
-                message = ex.Message;
-                break;
-
             default:
                 logger.LogError(exception, "Unhandled exception");
                 statusCode = StatusCodes.Status500InternalServerError;
