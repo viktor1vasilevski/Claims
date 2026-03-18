@@ -27,7 +27,7 @@ public class ClaimsApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         await _sqlContainer.StartAsync();
         await _mongoContainer.StartAsync();
 
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Staging");
         Environment.SetEnvironmentVariable("ConnectionStrings__SqlServer", _sqlContainer.GetConnectionString());
         Environment.SetEnvironmentVariable("ConnectionStrings__MongoDb", _mongoContainer.GetConnectionString());
     }

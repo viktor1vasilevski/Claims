@@ -19,13 +19,13 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Claims (Testing)": {
+    "Claims (Staging)": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
       "applicationUrl": "https://localhost:7053;http://localhost:5053",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Testing",
+        "ASPNETCORE_ENVIRONMENT": "Staging",
         "ConnectionStrings__SqlServer": "",
         "ConnectionStrings__MongoDb": ""
       }

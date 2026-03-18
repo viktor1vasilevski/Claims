@@ -46,7 +46,7 @@ jobs:
     needs: unit-tests
 
     env:
-      ASPNETCORE_ENVIRONMENT: Testing
+      ASPNETCORE_ENVIRONMENT: Staging
 
     steps:
       - uses: actions/checkout@v4
