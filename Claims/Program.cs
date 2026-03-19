@@ -14,19 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSwaggerDocumentation();
 
-string sqlConnectionString, mongoConnectionString;
-
-#if DEBUG
-if (builder.Configuration.GetValue<bool>("UseTestContainers"))
-{
-    (sqlConnectionString, mongoConnectionString) = await TestContainersExtensions.StartContainersAsync();
-}
-else
-#endif
-{
-    sqlConnectionString = builder.Configuration.GetConnectionString("SqlServer")!;
-    mongoConnectionString = builder.Configuration.GetConnectionString("MongoDb")!;
-}
+var sqlConnectionString = builder.Configuration.GetConnectionString("SqlServer")!;
+var mongoConnectionString = builder.Configuration.GetConnectionString("MongoDb")!;
 
 builder.Services
     .AddControllers()
@@ -52,7 +41,7 @@ builder.Services.AddHealthChecks()
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Staging"))
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing") || app.Environment.IsEnvironment("Staging"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
