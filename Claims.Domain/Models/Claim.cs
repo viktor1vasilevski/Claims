@@ -1,13 +1,32 @@
 using Claims.Domain.Enums;
+using Claims.Domain.Exceptions;
 
 namespace Claims.Domain.Models;
 
 public class Claim
 {
-    public string Id { get; set; } = Guid.NewGuid().ToString();
-    public required string CoverId { get; set; }
-    public DateTime Created { get; set; }
-    public required string Name { get; set; }
-    public ClaimType Type { get; set; }
-    public decimal DamageCost { get; set; }
+    public Guid Id { get; private set; }
+    public Guid CoverId { get; private set; }
+    public DateTime Created { get; private set; }
+    public string Name { get; private set; } = default!;
+    public ClaimType Type { get; private set; }
+    public decimal DamageCost { get; private set; }
+
+    private Claim() { }
+
+    public static Claim Create(Guid coverId, string name, ClaimType type, decimal damageCost, DateTime created)
+    {
+        if (damageCost <= 0 || damageCost > 100_000)
+            throw new InvalidDamageCostException(damageCost);
+
+        return new Claim
+        {
+            Id = Guid.NewGuid(),
+            CoverId = coverId,
+            Name = name,
+            Type = type,
+            DamageCost = damageCost,
+            Created = created
+        };
+    }
 }

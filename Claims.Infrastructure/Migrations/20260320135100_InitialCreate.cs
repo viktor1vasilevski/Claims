@@ -15,7 +15,7 @@ namespace Claims.Infrastructure.Migrations
                 name: "Covers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
@@ -30,8 +30,8 @@ namespace Claims.Infrastructure.Migrations
                 name: "Claims",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
-                    CoverId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CoverId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),

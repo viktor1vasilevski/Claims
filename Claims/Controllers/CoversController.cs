@@ -35,7 +35,7 @@ public class CoversController(ICoversService coversService) : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(CoverDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<CoverDto>> GetById(string id, CancellationToken cancellationToken)
+    public async Task<ActionResult<CoverDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var cover = await coversService.GetCoverByIdAsync(id, cancellationToken);
         return cover is null ? NotFound() : Ok(CoverMapper.ToDto(cover));
@@ -66,7 +66,7 @@ public class CoversController(ICoversService coversService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult> Delete(string id, CancellationToken cancellationToken)
+    public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         await coversService.DeleteCoverAsync(id, cancellationToken);
         return NoContent();

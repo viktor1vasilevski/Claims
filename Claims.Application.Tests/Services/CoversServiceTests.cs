@@ -1,4 +1,4 @@
-﻿using Claims.Application.Interfaces;
+using Claims.Application.Interfaces;
 using Claims.Application.Requests.Cover;
 using Claims.Application.Services;
 using Claims.Domain.Enums;
@@ -12,6 +12,9 @@ namespace Claims.Application.Tests.Services;
 
 public class CoversServiceTests
 {
+    private static readonly Guid CoverId1 = Guid.Parse("11111111-1111-1111-1111-111111111111");
+    private static readonly Guid CoverId2 = Guid.Parse("22222222-2222-2222-2222-222222222222");
+
     private readonly Mock<ICoversRepository> _coversRepositoryMock = new();
     private readonly Mock<IAuditService> _auditServiceMock = new();
     private readonly Mock<IPremiumCalculator> _premiumCalculatorMock = new();
@@ -37,8 +40,8 @@ public class CoversServiceTests
         // Arrange
         var covers = new List<Cover>
         {
-            new() { Id = "1", StartDate = new DateTime(2026, 1, 1), EndDate = new DateTime(2026, 12, 31), Type = CoverType.Yacht },
-            new() { Id = "2", StartDate = new DateTime(2026, 1, 1), EndDate = new DateTime(2026, 12, 31), Type = CoverType.Tanker }
+            Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 12, 31), CoverType.Yacht, 10000m),
+            Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 12, 31), CoverType.Tanker, 20000m)
         };
         _coversRepositoryMock
             .Setup(x => x.GetCoversAsync(It.IsAny<CancellationToken>()))
@@ -55,17 +58,17 @@ public class CoversServiceTests
     public async Task GetCoverAsync_WhenCoverExists_ShouldReturnCover()
     {
         // Arrange
-        var cover = new Cover { Id = "1", StartDate = new DateTime(2026, 1, 1), EndDate = new DateTime(2026, 12, 31), Type = CoverType.Yacht };
+        var cover = Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 12, 31), CoverType.Yacht, 10000m);
         _coversRepositoryMock
-            .Setup(x => x.GetCoverByIdAsync("1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetCoverByIdAsync(cover.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(cover);
 
         // Act
-        var result = await _sut.GetCoverByIdAsync("1");
+        var result = await _sut.GetCoverByIdAsync(cover.Id);
 
         // Assert
         result.Should().NotBeNull();
-        result!.Id.Should().Be("1");
+        result!.Id.Should().Be(cover.Id);
     }
 
     [Fact]
@@ -73,11 +76,11 @@ public class CoversServiceTests
     {
         // Arrange
         _coversRepositoryMock
-            .Setup(x => x.GetCoverByIdAsync("1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetCoverByIdAsync(CoverId1, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Cover?)null);
 
         // Act
-        var result = await _sut.GetCoverByIdAsync("1");
+        var result = await _sut.GetCoverByIdAsync(CoverId1);
 
         // Assert
         result.Should().BeNull();
@@ -109,24 +112,24 @@ public class CoversServiceTests
     public async Task DeleteCoverAsync_ShouldDeleteCoverAndAudit()
     {
         // Arrange
-        var cover = new Cover { Id = "1", StartDate = new DateTime(2026, 1, 1), EndDate = new DateTime(2026, 12, 31), Type = CoverType.Yacht };
+        var cover = Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 12, 31), CoverType.Yacht, 10000m);
 
         _coversRepositoryMock
-            .Setup(x => x.GetCoverByIdAsync("1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetCoverByIdAsync(CoverId1, It.IsAny<CancellationToken>()))
             .ReturnsAsync(cover);
         _coversRepositoryMock
             .Setup(x => x.DeleteCoverAsync(cover, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
         _claimRepositoryMock
-            .Setup(x => x.GetClaimsByCoverIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetClaimsByCoverIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Claim>());
 
         // Act
-        await _sut.DeleteCoverAsync("1");
+        await _sut.DeleteCoverAsync(CoverId1);
 
         // Assert
         _coversRepositoryMock.Verify(x => x.DeleteCoverAsync(cover, It.IsAny<CancellationToken>()), Times.Once);
-        _auditServiceMock.Verify(x => x.AuditCoverAsync("1", HttpRequestType.DELETE), Times.Once);
+        _auditServiceMock.Verify(x => x.AuditCoverAsync(CoverId1.ToString(), HttpRequestType.DELETE), Times.Once);
     }
 
     [Fact]
@@ -134,15 +137,15 @@ public class CoversServiceTests
     {
         // Arrange
         _coversRepositoryMock
-            .Setup(x => x.GetCoverByIdAsync("1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetCoverByIdAsync(CoverId1, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Cover?)null);
 
         // Act
-        var act = async () => await _sut.DeleteCoverAsync("1");
+        var act = async () => await _sut.DeleteCoverAsync(CoverId1);
 
         // Assert
         await act.Should().ThrowAsync<CoverNotFoundException>()
-            .WithMessage("Cover with id '1' was not found.");
+            .WithMessage($"Cover with id '{CoverId1}' was not found.");
         _coversRepositoryMock.Verify(x => x.DeleteCoverAsync(It.IsAny<Cover>(), It.IsAny<CancellationToken>()), Times.Never);
         _auditServiceMock.Verify(x => x.AuditCoverAsync(It.IsAny<string>(), It.IsAny<HttpRequestType>()), Times.Never);
     }
@@ -151,21 +154,21 @@ public class CoversServiceTests
     public async Task DeleteCoverAsync_WhenCoverHasClaims_ShouldThrowCoverHasActiveClaimsException()
     {
         // Arrange
-        var cover = new Cover { Id = "1", StartDate = new DateTime(2026, 1, 1), EndDate = new DateTime(2026, 12, 31), Type = CoverType.Yacht };
+        var cover = Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 12, 31), CoverType.Yacht, 10000m);
         var existingClaims = new List<Claim>
         {
-            new() { Id = "claim1", CoverId = "1", Name = "Active Claim", DamageCost = 1000, Type = ClaimType.Collision }
+            Claim.Create(CoverId1, "Active Claim", ClaimType.Collision, 1000, DateTime.UtcNow)
         };
 
         _coversRepositoryMock
-            .Setup(x => x.GetCoverByIdAsync("1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetCoverByIdAsync(CoverId1, It.IsAny<CancellationToken>()))
             .ReturnsAsync(cover);
         _claimRepositoryMock
-            .Setup(x => x.GetClaimsByCoverIdAsync("1", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetClaimsByCoverIdAsync(CoverId1, It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingClaims);
 
         // Act
-        var act = async () => await _sut.DeleteCoverAsync("1");
+        var act = async () => await _sut.DeleteCoverAsync(CoverId1);
 
         // Assert
         await act.Should().ThrowAsync<CoverHasActiveClaimsException>();

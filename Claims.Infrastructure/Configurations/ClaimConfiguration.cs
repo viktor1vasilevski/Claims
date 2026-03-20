@@ -11,11 +11,9 @@ public class ClaimConfiguration : IEntityTypeConfiguration<Claim>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Id)
-            .HasMaxLength(36)
             .IsRequired();
 
         builder.Property(x => x.CoverId)
-            .HasMaxLength(36)
             .IsRequired();
 
         builder.Property(x => x.Name)

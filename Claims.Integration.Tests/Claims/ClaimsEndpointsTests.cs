@@ -38,7 +38,7 @@ public class ClaimsEndpointsTests
         return (await response.Content.ReadFromJsonAsync<CoverDto>(JsonOptions))!;
     }
 
-    private async Task<ClaimDto> CreateClaimAsync(string coverId)
+    private async Task<ClaimDto> CreateClaimAsync(Guid coverId)
     {
         var request = new CreateClaimRequest
         {
@@ -66,7 +66,7 @@ public class ClaimsEndpointsTests
         var cover = await CreateCoverAsync();
         var request = new CreateClaimRequest
         {
-            CoverId = cover.Id!,
+            CoverId = cover.Id!.Value,
             Name = "Test Claim",
             Type = ClaimType.Collision,
             DamageCost = 5000,
@@ -80,8 +80,8 @@ public class ClaimsEndpointsTests
 
         var claim = await response.Content.ReadFromJsonAsync<ClaimDto>(JsonOptions);
         claim.Should().NotBeNull();
-        claim!.Id.Should().NotBeNullOrEmpty();
-        claim.CoverId.Should().Be(cover.Id);
+        claim!.Id.Should().NotBeNull();
+        claim.CoverId.Should().Be(cover.Id!.Value);
         claim.DamageCost.Should().Be(5000);
     }
 
@@ -89,7 +89,7 @@ public class ClaimsEndpointsTests
     public async Task GetClaimById_WhenExists_ShouldReturn200WithClaim()
     {
         var cover = await CreateCoverAsync();
-        var created = await CreateClaimAsync(cover.Id!);
+        var created = await CreateClaimAsync(cover.Id!.Value);
 
         var response = await _client.GetAsync($"/claims/{created.Id}");
 
@@ -110,7 +110,7 @@ public class ClaimsEndpointsTests
     public async Task DeleteClaim_WhenExists_ShouldReturn204()
     {
         var cover = await CreateCoverAsync();
-        var created = await CreateClaimAsync(cover.Id!);
+        var created = await CreateClaimAsync(cover.Id!.Value);
 
         var response = await _client.DeleteAsync($"/claims/{created.Id}");
 
@@ -130,7 +130,7 @@ public class ClaimsEndpointsTests
     {
         var request = new CreateClaimRequest
         {
-            CoverId = Guid.NewGuid().ToString(),
+            CoverId = Guid.NewGuid(),
             Name = "Test Claim",
             Type = ClaimType.Collision,
             DamageCost = 5000,
@@ -148,7 +148,7 @@ public class ClaimsEndpointsTests
         var cover = await CreateCoverAsync();
         var request = new CreateClaimRequest
         {
-            CoverId = cover.Id!,
+            CoverId = cover.Id!.Value,
             Name = "Test Claim",
             Type = ClaimType.Collision,
             DamageCost = 5000,

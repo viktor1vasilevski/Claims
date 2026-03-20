@@ -57,7 +57,7 @@ public class CoversEndpointsTests
 
         var cover = await response.Content.ReadFromJsonAsync<CoverDto>(JsonOptions);
         cover.Should().NotBeNull();
-        cover!.Id.Should().NotBeNullOrEmpty();
+        cover!.Id.Should().NotBeNull();
         cover.Type.Should().Be(CoverType.Yacht);
         cover.Premium.Should().BeGreaterThan(0);
     }
@@ -129,7 +129,7 @@ public class CoversEndpointsTests
 
         var claimRequest = new CreateClaimRequest
         {
-            CoverId = cover.Id!,
+            CoverId = cover.Id!.Value,
             Name = "Test Claim",
             Type = ClaimType.Collision,
             DamageCost = 5000,

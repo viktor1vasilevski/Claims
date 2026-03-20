@@ -13,25 +13,20 @@ public class CoversService(ICoversRepository coversRepository, IClaimsRepository
     public async Task<IReadOnlyList<Cover>> GetCoversAsync(CancellationToken cancellationToken = default)
         => await coversRepository.GetCoversAsync(cancellationToken);
 
-    public async Task<Cover?> GetCoverByIdAsync(string id, CancellationToken cancellationToken = default)
+    public async Task<Cover?> GetCoverByIdAsync(Guid id, CancellationToken cancellationToken = default)
         => await coversRepository.GetCoverByIdAsync(id, cancellationToken);
 
     public async Task<Cover> CreateCoverAsync(CreateCoverRequest request, CancellationToken cancellationToken = default)
     {
-        var cover = new Cover
-        {
-            StartDate = request.StartDate,
-            EndDate = request.EndDate,
-            Type = request.Type,
-            Premium = premiumCalculator.Compute(request.StartDate, request.EndDate, request.Type)
-        };
+        var premium = premiumCalculator.Compute(request.StartDate, request.EndDate, request.Type);
+        var cover = Cover.Create(request.StartDate, request.EndDate, request.Type, premium);
         await coversRepository.CreateCoverAsync(cover, cancellationToken);
-        await auditService.AuditCoverAsync(cover.Id, HttpRequestType.POST);
+        await auditService.AuditCoverAsync(cover.Id.ToString(), HttpRequestType.POST);
 
         return cover;
     }
 
-    public async Task DeleteCoverAsync(string id, CancellationToken cancellationToken = default)
+    public async Task DeleteCoverAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var cover = await coversRepository.GetCoverByIdAsync(id, cancellationToken);
         if (cover is null)
@@ -42,7 +37,7 @@ public class CoversService(ICoversRepository coversRepository, IClaimsRepository
             throw new CoverHasActiveClaimsException(id);
 
         await coversRepository.DeleteCoverAsync(cover, cancellationToken);
-        await auditService.AuditCoverAsync(id, HttpRequestType.DELETE);
+        await auditService.AuditCoverAsync(id.ToString(), HttpRequestType.DELETE);
     }
 
     public decimal ComputePremium(ComputePremiumRequest request)

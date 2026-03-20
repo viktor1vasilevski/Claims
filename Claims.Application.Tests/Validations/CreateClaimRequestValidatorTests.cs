@@ -1,4 +1,4 @@
-﻿using Claims.Application.Requests.Claims;
+using Claims.Application.Requests.Claims;
 using Claims.Application.Validations.Claims;
 using Claims.Domain.Enums;
 using FluentAssertions;
@@ -11,7 +11,7 @@ public class CreateClaimRequestValidatorTests
 
     private CreateClaimRequest ValidRequest() => new()
     {
-        CoverId = "c1",
+        CoverId = Guid.NewGuid(),
         Name = "Test Claim",
         Type = ClaimType.Collision,
         DamageCost = 5000,
@@ -25,13 +25,11 @@ public class CreateClaimRequestValidatorTests
         result.IsValid.Should().BeTrue();
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public async Task Validate_WhenCoverIdIsEmpty_ShouldFailWithMessage(string? coverId)
+    [Fact]
+    public async Task Validate_WhenCoverIdIsEmpty_ShouldFailWithMessage()
     {
         var request = ValidRequest();
-        request.CoverId = coverId!;
+        request.CoverId = Guid.Empty;
 
         var result = await _sut.ValidateAsync(request);
 

@@ -11,7 +11,6 @@ public class CoverConfiguration : IEntityTypeConfiguration<Cover>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Id)
-            .HasMaxLength(36)
             .IsRequired();
 
         builder.Property(x => x.StartDate)

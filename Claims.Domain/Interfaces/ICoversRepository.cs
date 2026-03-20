@@ -5,7 +5,7 @@ namespace Claims.Domain.Interfaces;
 public interface ICoversRepository
 {
     Task<IReadOnlyList<Cover>> GetCoversAsync(CancellationToken cancellationToken = default);
-    Task<Cover?> GetCoverByIdAsync(string id, CancellationToken cancellationToken = default);
+    Task<Cover?> GetCoverByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task CreateCoverAsync(Cover cover, CancellationToken cancellationToken = default);
     Task DeleteCoverAsync(Cover cover, CancellationToken cancellationToken = default);
 }

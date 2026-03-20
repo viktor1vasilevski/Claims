@@ -10,7 +10,7 @@ public class CoversRepository(ClaimsContext context) : ICoversRepository
     public async Task<IReadOnlyList<Cover>> GetCoversAsync(CancellationToken cancellationToken = default)
         => await context.Covers.ToListAsync(cancellationToken);
 
-    public async Task<Cover?> GetCoverByIdAsync(string id, CancellationToken cancellationToken = default)
+    public async Task<Cover?> GetCoverByIdAsync(Guid id, CancellationToken cancellationToken = default)
         => await context.Covers.FindAsync([id], cancellationToken);
 
     public async Task CreateCoverAsync(Cover cover, CancellationToken cancellationToken = default)

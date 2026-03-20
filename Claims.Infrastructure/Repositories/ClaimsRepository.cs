@@ -10,7 +10,7 @@ public class ClaimsRepository(ClaimsContext context) : IClaimsRepository
     public async Task<IReadOnlyList<Claim>> GetClaimsAsync(CancellationToken cancellationToken = default)
         => await context.Claims.ToListAsync(cancellationToken);
 
-    public async Task<Claim?> GetClaimByIdAsync(string id, CancellationToken cancellationToken = default)
+    public async Task<Claim?> GetClaimByIdAsync(Guid id, CancellationToken cancellationToken = default)
         => await context.Claims.FindAsync([id], cancellationToken);
 
     public async Task CreateClaimAsync(Claim claim, CancellationToken cancellationToken = default)
@@ -25,6 +25,6 @@ public class ClaimsRepository(ClaimsContext context) : IClaimsRepository
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<Claim>> GetClaimsByCoverIdAsync(string coverId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<Claim>> GetClaimsByCoverIdAsync(Guid coverId, CancellationToken cancellationToken = default)
         => await context.Claims.Where(c => c.CoverId == coverId).ToListAsync(cancellationToken);
 }
