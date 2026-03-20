@@ -1,5 +1,8 @@
-using System.Runtime.InteropServices;
+using Claims.Infrastructure.Context;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using System.Runtime.InteropServices;
 using Testcontainers.MongoDb;
 using Testcontainers.MsSql;
 
@@ -30,6 +33,10 @@ public class ClaimsApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
         Environment.SetEnvironmentVariable("ConnectionStrings__SqlServer", _sqlContainer.GetConnectionString());
         Environment.SetEnvironmentVariable("ConnectionStrings__MongoDb", _mongoContainer.GetConnectionString());
+
+        using var scope = Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ClaimsContext>();
+        await db.Database.MigrateAsync();
     }
 
     public new async Task DisposeAsync()
