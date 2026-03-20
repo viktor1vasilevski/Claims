@@ -30,8 +30,8 @@ jobs:
 
       - name: Run unit tests
         run: |
-          dotnet test --no-build --collect:"XPlat Code Coverage" Claims.Application.Tests/Claims.Application.Tests.csproj
-          dotnet test --no-build --collect:"XPlat Code Coverage" Claims.Infrastructure.Tests/Claims.Infrastructure.Tests.csproj
+          dotnet test --no-build --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Application.Tests/Claims.Application.Tests.csproj
+          dotnet test --no-build --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Infrastructure.Tests/Claims.Infrastructure.Tests.csproj
 
       - name: Run integration tests
         run: dotnet test --no-build Claims.Integration.Tests/Claims.Integration.Tests.csproj
