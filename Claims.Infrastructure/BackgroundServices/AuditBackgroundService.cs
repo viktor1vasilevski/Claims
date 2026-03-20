@@ -1,4 +1,3 @@
-using Claims.Application.Channels;
 using Claims.Application.Interfaces;
 using Claims.Domain.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,12 +6,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Claims.Infrastructure.BackgroundServices;
 
-public class AuditBackgroundService(AuditChannel auditChannel, IServiceScopeFactory scopeFactory,
+public class AuditBackgroundService(IAuditMessageReceiver messageReceiver, IServiceScopeFactory scopeFactory,
     IAuditMessageProcessor processor, ILogger<AuditBackgroundService> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await foreach (var message in auditChannel.Reader.ReadAllAsync(stoppingToken))
+        await foreach (var message in messageReceiver.ReadAllAsync(stoppingToken))
         {
             try
             {

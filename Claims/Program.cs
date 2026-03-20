@@ -28,6 +28,7 @@ builder.Services.AddDbContexts(sqlConnectionString, mongoConnectionString, build
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
+builder.Services.AddMessaging(builder.Configuration);
 
 builder.Services.AddValidatorsFromAssemblyContaining<CreateClaimRequestValidator>(ServiceLifetime.Transient);
 builder.Services.AddFluentValidationAutoValidation();

@@ -4,15 +4,11 @@ using Claims.Domain.Enums;
 
 namespace Claims.Application.Services;
 
-public class AuditService(AuditChannel auditChannel) : IAuditService
+public class AuditService(IAuditMessageSender messageSender) : IAuditService
 {
-    public async Task AuditClaimAsync(string id, HttpRequestType httpRequestType)
-    {
-        await auditChannel.Writer.WriteAsync(new AuditMessage(id, httpRequestType, AuditEntityType.Claim));
-    }
+    public Task AuditClaimAsync(string id, HttpRequestType httpRequestType)
+        => messageSender.SendAsync(new AuditMessage(id, httpRequestType, AuditEntityType.Claim));
 
-    public async Task AuditCoverAsync(string id, HttpRequestType httpRequestType)
-    {
-        await auditChannel.Writer.WriteAsync(new AuditMessage(id, httpRequestType, AuditEntityType.Cover));
-    }
+    public Task AuditCoverAsync(string id, HttpRequestType httpRequestType)
+        => messageSender.SendAsync(new AuditMessage(id, httpRequestType, AuditEntityType.Cover));
 }

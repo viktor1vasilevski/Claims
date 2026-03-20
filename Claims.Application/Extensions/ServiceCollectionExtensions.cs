@@ -1,5 +1,4 @@
-﻿using Claims.Application.Channels;
-using Claims.Application.Interfaces;
+﻿using Claims.Application.Interfaces;
 using Claims.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,8 +13,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuditService, AuditService>();
 
         services.AddSingleton<IAuditMessageProcessor, AuditMessageProcessor>();
-
-        services.AddSingleton<AuditChannel>();
 
         services.AddPremiumStrategies();
 

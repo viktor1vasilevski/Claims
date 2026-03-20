@@ -102,9 +102,47 @@ jobs:
       - name: Build
         run: dotnet build --no-restore --configuration Release
 
-      - name: Deploy to Staging
-        run: echo "Deploy to Staging environment"
-        # Replace with actual deployment step
+      - name: Publish
+        run: dotnet publish Claims/Claims.Api.csproj --no-build --configuration Release --output ./publish
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        working-directory: infra/environments/staging
+        run: terraform init
+        env:
+          ARM_ACCESS_KEY: ${{ secrets.TF_STATE_STORAGE_KEY }}
+
+      - name: Terraform Apply
+        working-directory: infra/environments/staging
+        run: terraform apply -auto-approve -var="sql_admin_password=${{ secrets.SQL_ADMIN_PASSWORD }}"
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_ACCESS_KEY: ${{ secrets.TF_STATE_STORAGE_KEY }}
+
+      - name: Get Terraform outputs
+        working-directory: infra/environments/staging
+        id: tf_outputs
+        run: echo "webapp_name=$(terraform output -raw webapp_name)" >> $GITHUB_OUTPUT
+        env:
+          ARM_ACCESS_KEY: ${{ secrets.TF_STATE_STORAGE_KEY }}
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}"}'
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ steps.tf_outputs.outputs.webapp_name }}
+          package: ./publish
 
   deploy-production:
     name: Deploy to Production

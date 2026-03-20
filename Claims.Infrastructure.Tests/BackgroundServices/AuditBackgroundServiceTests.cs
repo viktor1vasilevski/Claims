@@ -1,8 +1,9 @@
-﻿using Claims.Application.Channels;
+using Claims.Application.Channels;
 using Claims.Application.Interfaces;
 using Claims.Domain.Enums;
 using Claims.Domain.Interfaces;
 using Claims.Infrastructure.BackgroundServices;
+using Claims.Infrastructure.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -13,7 +14,7 @@ public class AuditBackgroundServiceTests
 {
     private readonly Mock<IAuditRepository> _auditRepositoryMock = new();
     private readonly Mock<ILogger<AuditBackgroundService>> _loggerMock = new();
-    private readonly AuditChannel _auditChannel = new();
+    private readonly InMemoryAuditQueue _queue = new();
     private readonly Mock<IAuditMessageProcessor> _processorMock = new();
 
     private AuditBackgroundService CreateSut()
@@ -23,7 +24,7 @@ public class AuditBackgroundServiceTests
 
         var scopeFactory = services.BuildServiceProvider().GetRequiredService<IServiceScopeFactory>();
 
-        return new AuditBackgroundService(_auditChannel, scopeFactory, _processorMock.Object, _loggerMock.Object);
+        return new AuditBackgroundService(_queue, scopeFactory, _processorMock.Object, _loggerMock.Object);
     }
 
     [Fact]
@@ -35,7 +36,7 @@ public class AuditBackgroundServiceTests
 
         // Act
         var task = sut.StartAsync(cts.Token);
-        await _auditChannel.Writer.WriteAsync(new AuditMessage("123", HttpRequestType.POST, AuditEntityType.Claim));
+        await _queue.SendAsync(new AuditMessage("123", HttpRequestType.POST, AuditEntityType.Claim));
         await Task.Delay(100);
         await cts.CancelAsync();
 
@@ -45,7 +46,6 @@ public class AuditBackgroundServiceTests
             It.Is<AuditMessage>(m => m.Id == "123" && m.HttpRequestType == HttpRequestType.POST && m.EntityType == AuditEntityType.Claim),
             It.IsAny<CancellationToken>()),
             Times.Once);
-
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class AuditBackgroundServiceTests
 
         // Act
         var task = sut.StartAsync(cts.Token);
-        await _auditChannel.Writer.WriteAsync(new AuditMessage("456", HttpRequestType.DELETE, AuditEntityType.Cover));
+        await _queue.SendAsync(new AuditMessage("456", HttpRequestType.DELETE, AuditEntityType.Cover));
         await Task.Delay(100);
         await cts.CancelAsync();
 
@@ -82,8 +82,8 @@ public class AuditBackgroundServiceTests
 
         // Act
         var task = sut.StartAsync(cts.Token);
-        await _auditChannel.Writer.WriteAsync(new AuditMessage("123", HttpRequestType.POST, AuditEntityType.Claim));
-        await _auditChannel.Writer.WriteAsync(new AuditMessage("456", HttpRequestType.POST, AuditEntityType.Claim));
+        await _queue.SendAsync(new AuditMessage("123", HttpRequestType.POST, AuditEntityType.Claim));
+        await _queue.SendAsync(new AuditMessage("456", HttpRequestType.POST, AuditEntityType.Claim));
         await Task.Delay(100);
         await cts.CancelAsync();
 
