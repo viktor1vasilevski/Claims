@@ -74,6 +74,14 @@ jobs:
       - name: Publish
         run: dotnet publish Claims/Claims.Api.csproj --no-build --configuration Release --output ./publish
 
+      - name: Install EF Core tools
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Run migrations
+        run: dotnet ef database update --context ClaimsContext --project Claims.Infrastructure --startup-project Claims
+        env:
+          ConnectionStrings__SqlServer: ${{ secrets.STAGING_SQL_CONNECTION_STRING }}
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:

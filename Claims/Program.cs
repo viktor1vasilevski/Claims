@@ -2,11 +2,9 @@ using Claims.Api.Extensions;
 using Claims.Api.Middlewares;
 using Claims.Application.Extensions;
 using Claims.Application.Validations.Claims;
-using Claims.Infrastructure.Context;
 using Claims.Infrastructure.Extensions;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using System.Text.Json.Serialization;
 
@@ -54,12 +52,6 @@ app.UseExceptionHandler();
 
 app.MapControllers();
 app.MapHealthChecks("/health");
-
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<ClaimsContext>();
-    context.Database.Migrate();
-}
 
 app.Run();
 
