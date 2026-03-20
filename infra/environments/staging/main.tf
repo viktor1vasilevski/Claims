@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 4.0"
     }
+    time = {
+      source  = "hashicorp/time"
+      version = "~> 0.12"
+    }
   }
 }
 
@@ -34,6 +38,13 @@ module "cosmos" {
   location            = azurerm_resource_group.rg.location
 }
 
+# Workaround: azurerm provider ~4.0 reads vulnerability assessment settings
+# immediately after SQL server creation, before Azure fully propagates the resource.
+resource "time_sleep" "wait_for_resource_group" {
+  depends_on      = [azurerm_resource_group.rg]
+  create_duration = "30s"
+}
+
 module "sql" {
   source              = "../../modules/sql"
   server_name         = "sql-claims-staging"
@@ -42,6 +53,8 @@ module "sql" {
   admin_password      = var.sql_admin_password
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
+
+  depends_on = [time_sleep.wait_for_resource_group]
 }
 
 module "appservice" {
