@@ -46,42 +46,11 @@ jobs:
       - name: Write coverage to job summary
         run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
 
-  deploy-testing:
-    name: Deploy to Testing
-    runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-
-    environment: Testing
-
-    env:
-      ASPNETCORE_ENVIRONMENT: Testing
-
-    steps:
-      - uses: actions/checkout@v4.2.2
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4.3.1
-        with:
-          dotnet-version: '9.0.x'
-
-      - name: Restore
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --no-restore --configuration Release
-
-      - name: Deploy to Testing
-        run: echo "Deploy to Testing environment"
-        # Replace with actual deployment step, e.g.:
-        # - Azure App Service: azure/webapps-deploy@v3
-        # - AWS: aws-actions/configure-aws-credentials + eb deploy
-        # - Docker: docker build + push + kubectl apply
-
   deploy-staging:
     name: Deploy to Staging
     runs-on: ubuntu-latest
-    needs: deploy-testing
+    needs: test
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
 
     environment: Staging
 
@@ -144,30 +113,3 @@ jobs:
           app-name: ${{ steps.tf_outputs.outputs.webapp_name }}
           package: ./publish
 
-  deploy-production:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    needs: deploy-staging
-
-    environment: Production
-
-    env:
-      ASPNETCORE_ENVIRONMENT: Production
-
-    steps:
-      - uses: actions/checkout@v4.2.2
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4.3.1
-        with:
-          dotnet-version: '9.0.x'
-
-      - name: Restore
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --no-restore --configuration Release
-
-      - name: Deploy to Production
-        run: echo "Deploy to Production environment"
-        # Replace with actual deployment step
