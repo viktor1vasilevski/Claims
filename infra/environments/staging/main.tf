@@ -45,11 +45,11 @@ module "sql" {
 }
 
 module "appservice" {
-  source              = "../../modules/appservice"
-  plan_name           = "asp-claims-staging"
-  app_name            = "app-claims-staging"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
+  source                       = "../../modules/appservice"
+  app_name                     = "app-claims-staging"
+  resource_group_name          = azurerm_resource_group.rg.name
+  existing_plan_name           = var.existing_plan_name
+  existing_plan_resource_group = var.existing_plan_resource_group
 
   app_settings = {
     "ASPNETCORE_ENVIRONMENT"                  = "Staging"

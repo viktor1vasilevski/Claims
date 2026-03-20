@@ -21,3 +21,13 @@ variable "sql_admin_password" {
   description = "SQL Server administrator password — passed via CI secret, never committed"
   sensitive   = true
 }
+
+variable "existing_plan_name" {
+  type        = string
+  description = "Name of the existing F1 App Service Plan to reuse"
+}
+
+variable "existing_plan_resource_group" {
+  type        = string
+  description = "Resource group of the existing F1 App Service Plan"
+}
