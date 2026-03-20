@@ -1,0 +1,20 @@
+{
+  "UserConfig": {
+    "Namespaces": [
+      {
+        "Name": "emulatorns",
+        "Queues": [
+          {
+            "Name": "audit-queue",
+            "Properties": {
+              "MaxSizeInMegabytes": 1024
+            }
+          }
+        ]
+      }
+    ],
+    "Logging": {
+      "Type": "File"
+    }
+  }
+}

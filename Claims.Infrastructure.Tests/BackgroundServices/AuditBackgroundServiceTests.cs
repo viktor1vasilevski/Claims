@@ -3,10 +3,10 @@ using Claims.Application.Interfaces;
 using Claims.Domain.Enums;
 using Claims.Domain.Interfaces;
 using Claims.Infrastructure.BackgroundServices;
-using Claims.Infrastructure.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.Threading.Channels;
 
 namespace Claims.Infrastructure.Tests.BackgroundServices;
 
@@ -14,7 +14,7 @@ public class AuditBackgroundServiceTests
 {
     private readonly Mock<IAuditRepository> _auditRepositoryMock = new();
     private readonly Mock<ILogger<AuditBackgroundService>> _loggerMock = new();
-    private readonly InMemoryAuditQueue _queue = new();
+    private readonly TestMessageQueue _queue = new();
     private readonly Mock<IAuditMessageProcessor> _processorMock = new();
 
     private AuditBackgroundService CreateSut()
@@ -102,5 +102,16 @@ public class AuditBackgroundServiceTests
                 It.IsAny<Exception>(),
                 It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
             Times.Exactly(2));
+    }
+
+    private sealed class TestMessageQueue : IAuditMessageSender, IAuditMessageReceiver
+    {
+        private readonly Channel<AuditMessage> _channel = Channel.CreateUnbounded<AuditMessage>();
+
+        public async Task SendAsync(AuditMessage message, CancellationToken cancellationToken = default)
+            => await _channel.Writer.WriteAsync(message, cancellationToken);
+
+        public IAsyncEnumerable<AuditMessage> ReadAllAsync(CancellationToken cancellationToken)
+            => _channel.Reader.ReadAllAsync(cancellationToken);
     }
 }

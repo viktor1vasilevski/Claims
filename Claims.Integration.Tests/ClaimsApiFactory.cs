@@ -1,8 +1,11 @@
+using Claims.Application.Channels;
+using Claims.Application.Interfaces;
 using Claims.Infrastructure.Context;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.InteropServices;
+using System.Threading.Channels;
 using Testcontainers.MongoDb;
 using Testcontainers.MsSql;
 
@@ -25,6 +28,18 @@ public class ClaimsApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             .Build();
     }
 
+    protected override void ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder)
+    {
+        builder.ConfigureServices(services =>
+        {
+            // Replace Service Bus with an in-process queue so integration tests
+            // don't require the Service Bus emulator to be running.
+            var queue = new InProcessAuditQueue();
+            services.AddSingleton<IAuditMessageSender>(queue);
+            services.AddSingleton<IAuditMessageReceiver>(queue);
+        });
+    }
+
     public async Task InitializeAsync()
     {
         await _sqlContainer.StartAsync();
@@ -44,5 +59,16 @@ public class ClaimsApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         await _sqlContainer.DisposeAsync();
         await _mongoContainer.DisposeAsync();
         await base.DisposeAsync();
+    }
+
+    private sealed class InProcessAuditQueue : IAuditMessageSender, IAuditMessageReceiver
+    {
+        private readonly Channel<AuditMessage> _channel = Channel.CreateUnbounded<AuditMessage>();
+
+        public async Task SendAsync(AuditMessage message, CancellationToken cancellationToken = default)
+            => await _channel.Writer.WriteAsync(message, cancellationToken);
+
+        public IAsyncEnumerable<AuditMessage> ReadAllAsync(CancellationToken cancellationToken)
+            => _channel.Reader.ReadAllAsync(cancellationToken);
     }
 }
