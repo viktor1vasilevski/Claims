@@ -28,10 +28,10 @@ public class CreateClaimRequestValidatorTests
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public async Task Validate_WhenCoverIdIsEmpty_ShouldFailWithMessage(string coverId)
+    public async Task Validate_WhenCoverIdIsEmpty_ShouldFailWithMessage(string? coverId)
     {
         var request = ValidRequest();
-        request.CoverId = coverId;
+        request.CoverId = coverId!;
 
         var result = await _sut.ValidateAsync(request);
 
@@ -42,10 +42,10 @@ public class CreateClaimRequestValidatorTests
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public async Task Validate_WhenNameIsEmpty_ShouldFailWithMessage(string name)
+    public async Task Validate_WhenNameIsEmpty_ShouldFailWithMessage(string? name)
     {
         var request = ValidRequest();
-        request.Name = name;
+        request.Name = name!;
 
         var result = await _sut.ValidateAsync(request);
 

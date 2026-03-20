@@ -62,4 +62,6 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
+#pragma warning disable CS1591
 public partial class Program { }
+#pragma warning restore CS1591
