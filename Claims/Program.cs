@@ -56,7 +56,7 @@ app.MapHealthChecks("/health");
 
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<AuditContext>();
+    var context = scope.ServiceProvider.GetRequiredService<ClaimsContext>();
     context.Database.Migrate();
 }
 

@@ -1,4 +1,4 @@
-﻿using Claims.Infrastructure.Context;
+using Claims.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 
@@ -20,12 +20,12 @@ public static class DbContextExtensions
     /// <returns>The configured service collection.</returns>
     public static IServiceCollection AddDbContexts(this IServiceCollection services, string sqlConnectionString, string mongoConnectionString, string mongoDatabaseName)
     {
-        services.AddDbContext<AuditContext>(options =>
+        services.AddDbContext<ClaimsContext>(options =>
             options.UseSqlServer(sqlConnectionString));
 
         services.AddSingleton<IMongoClient>(new MongoClient(mongoConnectionString));
 
-        services.AddDbContext<ClaimsContext>((serviceProvider, options) =>
+        services.AddDbContext<AuditContext>((serviceProvider, options) =>
         {
             var client = serviceProvider.GetRequiredService<IMongoClient>();
             options.UseMongoDB(client, mongoDatabaseName);
