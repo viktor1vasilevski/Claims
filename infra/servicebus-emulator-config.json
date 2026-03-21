@@ -2,7 +2,7 @@
   "UserConfig": {
     "Namespaces": [
       {
-        "Name": "emulatorns",
+        "Name": "sbemulatorns",
         "Queues": [
           {
             "Name": "audit-queue",

@@ -20,6 +20,7 @@ public class CoversService(ICoversRepository coversRepository, IClaimsRepository
     {
         var premium = premiumCalculator.Compute(request.StartDate, request.EndDate, request.Type);
         var cover = Cover.Create(request.StartDate, request.EndDate, request.Type, premium);
+
         await coversRepository.CreateCoverAsync(cover, cancellationToken);
         await auditService.AuditCoverAsync(cover.Id.ToString(), HttpRequestType.POST);
 
