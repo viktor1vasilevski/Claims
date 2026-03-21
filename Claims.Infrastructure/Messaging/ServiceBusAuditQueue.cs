@@ -31,8 +31,16 @@ public class ServiceBusAuditQueue : IAuditMessageSender, IAuditMessageReceiver, 
 
     public async Task SendAsync(AuditMessage message, CancellationToken cancellationToken = default)
     {
-        var body = JsonSerializer.Serialize(message, JsonOptions);
-        await _sender.SendMessageAsync(new ServiceBusMessage(body), cancellationToken);
+        try
+        {
+            var body = JsonSerializer.Serialize(message, JsonOptions);
+            await _sender.SendMessageAsync(new ServiceBusMessage(body), cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to send audit message for {EntityType} {Id}. The audit will be skipped.",
+                message.EntityType, message.Id);
+        }
     }
 
     public async IAsyncEnumerable<AuditMessage> ReadAllAsync([EnumeratorCancellation] CancellationToken cancellationToken)
@@ -52,10 +60,14 @@ public class ServiceBusAuditQueue : IAuditMessageSender, IAuditMessageReceiver, 
                 await channel.Writer.WriteAsync(message, cancellationToken);
                 await args.CompleteMessageAsync(args.Message, cancellationToken);
             }
-            catch (Exception ex)
+            catch (JsonException ex)
             {
-                _logger.LogError(ex, "Failed to deserialize audit message from Service Bus");
+                _logger.LogError(ex, "Failed to deserialize audit message from Service Bus. Dead-lettering.");
                 await args.DeadLetterMessageAsync(args.Message, cancellationToken: cancellationToken);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                _logger.LogWarning(ex, "Transient error processing audit message for {MessageId}. Will retry.", args.Message.MessageId);
             }
         };
 
