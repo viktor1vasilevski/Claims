@@ -2,6 +2,7 @@ global using Claims.Application.Interfaces.Messaging;
 global using Claims.Application.Interfaces.Services;
 global using Claims.Application.Interfaces.Strategies;
 global using Claims.Application.Services;
+global using Claims.Application.Services.Audit;
 global using Claims.Application.Constants;
 global using Claims.Application.Requests.Claims;
 global using Claims.Application.Requests.Cover;

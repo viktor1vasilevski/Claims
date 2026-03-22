@@ -1,6 +1,6 @@
 using Claims.Application.Channels;
 
-namespace Claims.Application.Services;
+namespace Claims.Application.Services.Audit;
 
 public class AuditService(IAuditMessageSender messageSender) : IAuditService
 {

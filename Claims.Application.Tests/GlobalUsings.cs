@@ -4,6 +4,7 @@ global using Claims.Application.Mappers;
 global using Claims.Application.Requests.Claims;
 global using Claims.Application.Requests.Cover;
 global using Claims.Application.Services;
+global using Claims.Application.Services.Audit;
 global using Claims.Application.Strategies;
 global using Claims.Application.Validations.Claims;
 global using Claims.Application.Validations.Cover;
