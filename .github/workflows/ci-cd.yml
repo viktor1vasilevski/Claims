@@ -7,12 +7,9 @@ on:
     branches: [ master ]
 
 jobs:
-  test:
-    name: Build, Test and Coverage
+  build:
+    name: Build
     runs-on: ubuntu-latest
-
-    env:
-      ASPNETCORE_ENVIRONMENT: Testing
 
     steps:
       - uses: actions/checkout@v4.2.2
@@ -28,13 +25,74 @@ jobs:
       - name: Build
         run: dotnet build --no-restore
 
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: .
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: build
+
+    env:
+      ASPNETCORE_ENVIRONMENT: Testing
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4.3.1
+        with:
+          dotnet-version: '9.0.x'
+
       - name: Run unit tests
         run: |
           dotnet test --no-build --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Application.Tests/Claims.Application.Tests.csproj
           dotnet test --no-build --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Infrastructure.Tests/Claims.Infrastructure.Tests.csproj
 
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: '**/coverage.cobertura.xml'
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: build
+
+    env:
+      ASPNETCORE_ENVIRONMENT: Testing
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4.3.1
+        with:
+          dotnet-version: '9.0.x'
+
       - name: Run integration tests
         run: dotnet test --no-build Claims.Integration.Tests/Claims.Integration.Tests.csproj
+
+  coverage:
+    name: Coverage Report
+    runs-on: ubuntu-latest
+    needs: unit-tests
+
+    steps:
+      - name: Download coverage results
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage
 
       - name: Generate coverage report
         uses: danielpalme/ReportGenerator-GitHub-Action@5
@@ -49,7 +107,7 @@ jobs:
   deploy-staging:
     name: Deploy to Staging
     runs-on: ubuntu-latest
-    needs: test
+    needs: [ unit-tests, integration-tests ]
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
 
     environment: Staging
@@ -136,4 +194,3 @@ jobs:
           done
           echo "Smoke test failed after 5 attempts"
           exit 1
-
