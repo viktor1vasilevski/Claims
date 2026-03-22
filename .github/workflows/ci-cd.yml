@@ -55,12 +55,15 @@ jobs:
           dotnet test --no-build --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Application.Tests/Claims.Application.Tests.csproj
           dotnet test --no-build --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Infrastructure.Tests/Claims.Infrastructure.Tests.csproj
 
-      - name: Upload coverage results
-        uses: actions/upload-artifact@v4
+      - name: Generate coverage report
+        uses: danielpalme/ReportGenerator-GitHub-Action@5
         with:
-          name: coverage
-          path: .
-          include-hidden-files: true
+          reports: '**/coverage.cobertura.xml'
+          targetdir: coveragereport
+          reporttypes: MarkdownSummaryGithub
+
+      - name: Write coverage to job summary
+        run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
 
   integration-tests:
     name: Integration Tests
@@ -83,27 +86,6 @@ jobs:
 
       - name: Run integration tests
         run: dotnet test --no-build Claims.Integration.Tests/Claims.Integration.Tests.csproj
-
-  coverage:
-    name: Coverage Report
-    runs-on: ubuntu-latest
-    needs: unit-tests
-
-    steps:
-      - name: Download coverage results
-        uses: actions/download-artifact@v4
-        with:
-          name: coverage
-
-      - name: Generate coverage report
-        uses: danielpalme/ReportGenerator-GitHub-Action@5
-        with:
-          reports: '**/coverage.cobertura.xml'
-          targetdir: coveragereport
-          reporttypes: MarkdownSummaryGithub
-
-      - name: Write coverage to job summary
-        run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
 
   deploy-staging:
     name: Deploy to Staging
