@@ -106,7 +106,9 @@ jobs:
       - name: Get Terraform outputs
         working-directory: infra/environments/staging
         id: tf_outputs
-        run: echo "webapp_name=$(terraform output -raw webapp_name)" >> $GITHUB_OUTPUT
+        run: |
+          echo "webapp_name=$(terraform output -raw webapp_name)" >> $GITHUB_OUTPUT
+          echo "webapp_url=$(terraform output -raw webapp_url)" >> $GITHUB_OUTPUT
         env:
           ARM_ACCESS_KEY: ${{ secrets.TF_STATE_STORAGE_KEY }}
 
@@ -120,4 +122,18 @@ jobs:
         with:
           app-name: ${{ steps.tf_outputs.outputs.webapp_name }}
           package: ./publish
+
+      - name: Smoke test
+        run: |
+          for i in {1..5}; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://${{ steps.tf_outputs.outputs.webapp_url }}/health)
+            if [ "$STATUS" = "200" ]; then
+              echo "Smoke test passed"
+              exit 0
+            fi
+            echo "Attempt $i failed (status $STATUS), retrying in 10s..."
+            sleep 10
+          done
+          echo "Smoke test failed after 5 attempts"
+          exit 1
 
