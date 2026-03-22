@@ -1,4 +1,4 @@
-global using Claims.Application.Interfaces;
+global using Claims.Application.Interfaces.Messaging;
 global using Claims.Domain.Interfaces;
 global using Claims.Domain.Models;
 global using Claims.Infrastructure.Context;

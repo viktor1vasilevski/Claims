@@ -1,5 +1,5 @@
 using Claims.Application.Channels;
-using Claims.Application.Interfaces;
+using Claims.Application.Interfaces.Messaging;
 using Claims.Domain.Enums;
 using Claims.Domain.Interfaces;
 using Claims.Infrastructure.BackgroundServices;

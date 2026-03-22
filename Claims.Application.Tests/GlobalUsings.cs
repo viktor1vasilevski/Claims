@@ -1,5 +1,5 @@
 global using Claims.Application.Channels;
-global using Claims.Application.Interfaces;
+global using Claims.Application.Interfaces.Services;
 global using Claims.Application.Mappers;
 global using Claims.Application.Requests.Claims;
 global using Claims.Application.Requests.Cover;

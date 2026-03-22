@@ -1,6 +1,6 @@
 global using Claims.Application.Channels;
 global using Claims.Application.DTOs;
-global using Claims.Application.Interfaces;
+global using Claims.Application.Interfaces.Messaging;
 global using Claims.Application.Requests.Cover;
 global using Claims.Domain.Enums;
 global using Claims.Infrastructure.Context;

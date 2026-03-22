@@ -1,6 +1,6 @@
 using Claims.Application.Channels;
 
-namespace Claims.Application.Interfaces;
+namespace Claims.Application.Interfaces.Messaging;
 
 public interface IAuditMessageReceiver
 {
