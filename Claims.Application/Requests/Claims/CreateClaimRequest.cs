@@ -1,6 +1,4 @@
-﻿using Claims.Domain.Enums;
-
-namespace Claims.Application.Requests.Claims;
+﻿namespace Claims.Application.Requests.Claims;
 
 public class CreateClaimRequest
 {

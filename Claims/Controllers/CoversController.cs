@@ -1,8 +1,4 @@
-using Claims.Application.DTOs;
-using Claims.Application.Interfaces;
-using Claims.Application.Mappers;
 using Claims.Application.Requests.Cover;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Claims.Controllers;
 

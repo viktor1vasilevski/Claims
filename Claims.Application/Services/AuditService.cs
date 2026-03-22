@@ -1,6 +1,4 @@
 using Claims.Application.Channels;
-using Claims.Application.Interfaces;
-using Claims.Domain.Enums;
 
 namespace Claims.Application.Services;
 

@@ -1,11 +1,8 @@
 using Claims.Api.Middlewares;
-using Claims.Domain.Enums;
 using Claims.Domain.Exceptions;
-using FluentAssertions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Moq;
 
 namespace Claims.Api.Tests.Middlewares;
 

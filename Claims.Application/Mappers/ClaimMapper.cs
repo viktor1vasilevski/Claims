@@ -1,5 +1,4 @@
 ﻿using Claims.Application.DTOs;
-using Claims.Domain.Models;
 
 namespace Claims.Application.Mappers;
 

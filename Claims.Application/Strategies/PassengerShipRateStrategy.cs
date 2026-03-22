@@ -1,7 +1,4 @@
-﻿using Claims.Application.Constants;
-using Claims.Domain.Enums;
-
-namespace Claims.Application.Strategies;
+﻿namespace Claims.Application.Strategies;
 
 public class PassengerShipRateStrategy : DefaultRateStrategy
 {

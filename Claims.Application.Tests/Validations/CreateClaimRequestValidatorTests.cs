@@ -1,7 +1,3 @@
-using Claims.Application.Requests.Claims;
-using Claims.Application.Validations.Claims;
-using Claims.Domain.Enums;
-using FluentAssertions;
 
 namespace Claims.Application.Tests.Validations;
 

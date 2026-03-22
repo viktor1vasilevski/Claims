@@ -1,8 +1,4 @@
-﻿using Claims.Application.Constants;
-using Claims.Application.Interfaces;
-using Claims.Domain.Enums;
-
-namespace Claims.Application.Strategies;
+﻿namespace Claims.Application.Strategies;
 
 public abstract class DefaultRateStrategy : IPremiumRateStrategy
 {

@@ -1,7 +1,3 @@
-using Claims.Domain.Interfaces;
-using Claims.Domain.Models;
-using Claims.Infrastructure.Context;
-
 namespace Claims.Infrastructure.Repositories;
 
 public class AuditRepository(AuditContext auditContext) : IAuditRepository

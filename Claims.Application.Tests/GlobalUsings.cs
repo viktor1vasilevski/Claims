@@ -1,0 +1,15 @@
+global using Claims.Application.Channels;
+global using Claims.Application.Interfaces;
+global using Claims.Application.Mappers;
+global using Claims.Application.Requests.Claims;
+global using Claims.Application.Requests.Cover;
+global using Claims.Application.Services;
+global using Claims.Application.Strategies;
+global using Claims.Application.Validations.Claims;
+global using Claims.Application.Validations.Cover;
+global using Claims.Domain.Enums;
+global using Claims.Domain.Exceptions;
+global using Claims.Domain.Interfaces;
+global using Claims.Domain.Models;
+global using FluentAssertions;
+global using Moq;

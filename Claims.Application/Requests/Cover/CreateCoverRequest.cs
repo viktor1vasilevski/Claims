@@ -1,6 +1,4 @@
-﻿using Claims.Domain.Enums;
-
-namespace Claims.Application.Requests.Cover;
+﻿namespace Claims.Application.Requests.Cover;
 
 public class CreateCoverRequest
 {

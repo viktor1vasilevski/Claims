@@ -1,6 +1,4 @@
-﻿using Claims.Domain.Enums;
-
-namespace Claims.Application.DTOs;
+﻿namespace Claims.Application.DTOs;
 
 public class ClaimDto
 {

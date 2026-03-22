@@ -1,10 +1,3 @@
-using Claims.Application.Interfaces;
-using Claims.Application.Requests.Cover;
-using Claims.Domain.Enums;
-using Claims.Domain.Exceptions;
-using Claims.Domain.Interfaces;
-using Claims.Domain.Models;
-
 namespace Claims.Application.Services;
 
 public class CoversService(ICoversRepository coversRepository, IClaimsRepository claimsRepository,

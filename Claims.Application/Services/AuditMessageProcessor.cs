@@ -1,9 +1,4 @@
 ﻿using Claims.Application.Channels;
-using Claims.Application.Interfaces;
-using Claims.Domain.Enums;
-using Claims.Domain.Exceptions;
-using Claims.Domain.Interfaces;
-using Claims.Domain.Models;
 
 namespace Claims.Application.Services;
 

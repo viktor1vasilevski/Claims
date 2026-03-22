@@ -1,7 +1,4 @@
-﻿using Claims.Application.Interfaces;
-using Claims.Application.Services;
-using Microsoft.Extensions.DependencyInjection;
-
+﻿
 namespace Claims.Application.Extensions;
 
 public static class ServiceCollectionExtensions

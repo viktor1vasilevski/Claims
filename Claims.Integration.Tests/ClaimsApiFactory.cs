@@ -1,11 +1,6 @@
-using Claims.Application.Channels;
-using Claims.Application.Interfaces;
-using Claims.Infrastructure.Context;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.InteropServices;
-using System.Threading.Channels;
 using Testcontainers.MongoDb;
 using Testcontainers.MsSql;
 

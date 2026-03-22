@@ -1,8 +1,3 @@
-using Claims.Domain.Interfaces;
-using Claims.Domain.Models;
-using Claims.Infrastructure.Context;
-using Microsoft.EntityFrameworkCore;
-
 namespace Claims.Infrastructure.Repositories;
 
 public class CoversRepository(ClaimsContext context) : ICoversRepository

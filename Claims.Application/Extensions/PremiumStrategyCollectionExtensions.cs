@@ -1,7 +1,4 @@
-﻿using Claims.Application.Interfaces;
-using Claims.Application.Services;
-using Claims.Application.Strategies;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Claims.Application.Strategies;
 
 namespace Claims.Application.Extensions;
 

@@ -1,7 +1,5 @@
-﻿using Claims.Domain.Interfaces;
-using Claims.Infrastructure.BackgroundServices;
+﻿using Claims.Infrastructure.BackgroundServices;
 using Claims.Infrastructure.Repositories;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Claims.Infrastructure.Extensions;
 

@@ -1,6 +1,3 @@
-using Claims.Application.Interfaces;
-using Claims.Domain.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 

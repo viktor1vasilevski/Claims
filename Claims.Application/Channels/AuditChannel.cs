@@ -1,5 +1,4 @@
-﻿using Claims.Domain.Enums;
-using System.Threading.Channels;
+﻿using System.Threading.Channels;
 
 namespace Claims.Application.Channels;
 

@@ -1,9 +1,4 @@
-﻿using Claims.Application.Constants;
-using Claims.Application.Interfaces;
-using Claims.Domain.Enums;
-using Claims.Domain.Exceptions;
-
-namespace Claims.Application.Services;
+﻿namespace Claims.Application.Services;
 
 public class PremiumCalculator(IEnumerable<IPremiumRateStrategy> _strategies) : IPremiumCalculator
 {

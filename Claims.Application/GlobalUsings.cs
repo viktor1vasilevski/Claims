@@ -1,0 +1,11 @@
+global using Claims.Application.Interfaces;
+global using Claims.Application.Services;
+global using Claims.Application.Constants;
+global using Claims.Application.Requests.Claims;
+global using Claims.Application.Requests.Cover;
+global using Claims.Domain.Enums;
+global using Claims.Domain.Exceptions;
+global using Claims.Domain.Interfaces;
+global using Claims.Domain.Models;
+global using FluentValidation;
+global using Microsoft.Extensions.DependencyInjection;

@@ -1,7 +1,4 @@
-﻿using Claims.Application.Requests.Cover;
-using FluentValidation;
-
-namespace Claims.Application.Validations.Cover;
+﻿namespace Claims.Application.Validations.Cover;
 
 public class CreateCoverRequestValidator : AbstractValidator<CreateCoverRequest>
 {

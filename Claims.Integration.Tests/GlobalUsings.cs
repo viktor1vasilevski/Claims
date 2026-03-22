@@ -1,0 +1,12 @@
+global using Claims.Application.Channels;
+global using Claims.Application.DTOs;
+global using Claims.Application.Interfaces;
+global using Claims.Application.Requests.Cover;
+global using Claims.Domain.Enums;
+global using Claims.Infrastructure.Context;
+global using FluentAssertions;
+global using Microsoft.Extensions.DependencyInjection;
+global using System.Net.Http.Json;
+global using System.Text.Json;
+global using System.Text.Json.Serialization;
+global using System.Threading.Channels;

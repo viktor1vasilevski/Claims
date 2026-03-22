@@ -1,7 +1,4 @@
-﻿using Claims.Application.Requests.Claims;
-using FluentValidation;
-
-namespace Claims.Application.Validations.Claims;
+﻿namespace Claims.Application.Validations.Claims;
 
 public class CreateClaimRequestValidator : AbstractValidator<CreateClaimRequest>
 {

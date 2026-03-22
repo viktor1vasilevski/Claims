@@ -1,12 +1,3 @@
-using Claims.Application.Interfaces;
-using Claims.Application.Requests.Claims;
-using Claims.Application.Services;
-using Claims.Domain.Enums;
-using Claims.Domain.Exceptions;
-using Claims.Domain.Interfaces;
-using Claims.Domain.Models;
-using FluentAssertions;
-using Moq;
 
 namespace Claims.Application.Tests.Services;
 

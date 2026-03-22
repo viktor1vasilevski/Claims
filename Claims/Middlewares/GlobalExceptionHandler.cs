@@ -1,7 +1,5 @@
 using Claims.Domain.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-
 namespace Claims.Api.Middlewares;
 
 /// <summary>

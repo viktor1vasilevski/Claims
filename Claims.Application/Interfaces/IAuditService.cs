@@ -1,6 +1,4 @@
-﻿using Claims.Domain.Enums;
-
-namespace Claims.Application.Interfaces;
+﻿namespace Claims.Application.Interfaces;
 
 public interface IAuditService
 {

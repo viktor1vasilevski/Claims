@@ -1,6 +1,4 @@
-﻿using Claims.Domain.Enums;
-
-namespace Claims.Domain.Exceptions;
+﻿namespace Claims.Domain.Exceptions;
 
 public class CoverNotFoundException(Guid coverId)
     : Exception($"Cover with id '{coverId}' was not found.");

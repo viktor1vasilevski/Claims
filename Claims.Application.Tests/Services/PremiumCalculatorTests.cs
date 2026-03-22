@@ -1,9 +1,4 @@
-﻿using Claims.Application.Services;
-using Claims.Application.Strategies;
-using Claims.Domain.Enums;
-using Claims.Domain.Exceptions;
-using FluentAssertions;
-
+﻿
 namespace Claims.Application.Tests.Services;
 
 public class PremiumCalculatorTests

@@ -1,7 +1,3 @@
-using Claims.Domain.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 namespace Claims.Infrastructure.Configurations;
 
 public class ClaimConfiguration : IEntityTypeConfiguration<Claim>

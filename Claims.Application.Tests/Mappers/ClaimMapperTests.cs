@@ -1,7 +1,3 @@
-using Claims.Application.Mappers;
-using Claims.Domain.Enums;
-using Claims.Domain.Models;
-using FluentAssertions;
 
 namespace Claims.Application.Tests.Mappers;
 

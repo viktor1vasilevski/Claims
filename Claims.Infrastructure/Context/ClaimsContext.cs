@@ -1,5 +1,3 @@
-using Claims.Domain.Models;
-using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace Claims.Infrastructure.Context;

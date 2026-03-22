@@ -1,6 +1,4 @@
-﻿using Claims.Domain.Enums;
-
-namespace Claims.Domain.Models;
+﻿namespace Claims.Domain.Models;
 
 public class CoverAudit
 {

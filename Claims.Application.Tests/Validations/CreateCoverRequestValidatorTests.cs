@@ -1,8 +1,4 @@
-﻿using Claims.Application.Requests.Cover;
-using Claims.Application.Validations.Cover;
-using Claims.Domain.Enums;
-using FluentAssertions;
-
+﻿
 namespace Claims.Application.Tests.Validations;
 
 public class CreateCoverRequestValidatorTests

@@ -1,12 +1,6 @@
-using Claims.Application.DTOs;
-using Claims.Application.Interfaces;
 using Claims.Application.Requests.Cover;
 using Claims.Controllers;
-using Claims.Domain.Enums;
 using Claims.Domain.Models;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
 
 namespace Claims.Api.Tests.Controllers;
 

@@ -1,7 +1,4 @@
-﻿using Claims.Application.Requests.Cover;
-using Claims.Domain.Models;
-
-namespace Claims.Application.Interfaces;
+﻿namespace Claims.Application.Interfaces;
 
 public interface ICoversService
 {

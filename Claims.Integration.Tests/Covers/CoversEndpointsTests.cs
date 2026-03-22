@@ -1,12 +1,5 @@
 using System.Net;
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Claims.Application.DTOs;
 using Claims.Application.Requests.Claims;
-using Claims.Application.Requests.Cover;
-using Claims.Domain.Enums;
-using FluentAssertions;
 
 namespace Claims.Integration.Tests.Covers;
 

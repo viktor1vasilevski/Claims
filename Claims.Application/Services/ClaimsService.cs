@@ -1,10 +1,3 @@
-using Claims.Application.Interfaces;
-using Claims.Application.Requests.Claims;
-using Claims.Domain.Enums;
-using Claims.Domain.Exceptions;
-using Claims.Domain.Interfaces;
-using Claims.Domain.Models;
-
 namespace Claims.Application.Services;
 
 public class ClaimsService(IClaimsRepository claimsRepository, IAuditService auditService,
