@@ -126,7 +126,7 @@ jobs:
       - name: Smoke test
         run: |
           for i in {1..5}; do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://${{ steps.tf_outputs.outputs.webapp_url }}/health)
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${{ steps.tf_outputs.outputs.webapp_url }}/health)
             if [ "$STATUS" = "200" ]; then
               echo "Smoke test passed"
               exit 0
