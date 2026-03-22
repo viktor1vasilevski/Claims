@@ -22,9 +22,12 @@ public class ServiceBusAuditQueue : IAuditMessageSender, IAuditMessageReceiver, 
     };
 
     public ServiceBusAuditQueue(string connectionString, string queueName, ILogger<ServiceBusAuditQueue> logger)
+        : this(new ServiceBusClient(connectionString), queueName, logger) { }
+
+    public ServiceBusAuditQueue(ServiceBusClient client, string queueName, ILogger<ServiceBusAuditQueue> logger)
     {
-        _client = new ServiceBusClient(connectionString);
-        _sender = _client.CreateSender(queueName);
+        _client = client;
+        _sender = client.CreateSender(queueName);
         _queueName = queueName;
         _logger = logger;
     }
