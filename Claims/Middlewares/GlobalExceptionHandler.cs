@@ -18,43 +18,50 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IPro
         switch (exception)
         {
             case CoverNotFoundException ex:
-                logger.LogWarning(ex, "Cover not found: {Message}", ex.Message);
+                logger.LogWarning(ex, "Cover not found: {Message} | {Method} {Path} | TraceId: {TraceId}", 
+                    ex.Message, httpContext.Request.Method, httpContext.Request.Path, httpContext.TraceIdentifier);
                 statusCode = StatusCodes.Status404NotFound;
                 message = ex.Message;
                 break;
 
             case ClaimDateOutOfRangeException ex:
-                logger.LogWarning(ex, "Claim date validation failed: {Message}", ex.Message);
+                logger.LogWarning(ex, "Claim date validation failed: {Message} | {Method} {Path} | TraceId: {TraceId}",
+                    ex.Message, httpContext.Request.Method, httpContext.Request.Path, httpContext.TraceIdentifier);
                 statusCode = StatusCodes.Status400BadRequest;
                 message = ex.Message;
                 break;
 
             case CoverHasActiveClaimsException ex:
-                logger.LogWarning(ex, "Cover has active claims: {Message}", ex.Message);
+                logger.LogWarning(ex, "Cover has active claims: {Message} | {Method} {Path} | TraceId: {TraceId}", 
+                    ex.Message, httpContext.Request.Method, httpContext.Request.Path, httpContext.TraceIdentifier);
                 statusCode = StatusCodes.Status409Conflict;
                 message = ex.Message;
                 break;
 
             case PremiumStrategyNotFoundException ex:
-                logger.LogWarning(ex, "Premium strategy not found: {Message}", ex.Message);
+                logger.LogWarning(ex, "Premium strategy not found: {Message} | {Method} {Path} | TraceId: {TraceId}", 
+                    ex.Message, httpContext.Request.Method, httpContext.Request.Path, httpContext.TraceIdentifier);
                 statusCode = StatusCodes.Status400BadRequest;
                 message = ex.Message;
                 break;
 
             case ClaimNotFoundException ex:
-                logger.LogWarning(ex, "Claim not found: {Message}", ex.Message);
+                logger.LogWarning(ex, "Claim not found: {Message} | {Method} {Path} | TraceId: {TraceId}", 
+                    ex.Message, httpContext.Request.Method, httpContext.Request.Path, httpContext.TraceIdentifier);
                 statusCode = StatusCodes.Status404NotFound;
                 message = ex.Message;
                 break;
 
             case UnhandledAuditEntityTypeException ex:
-                logger.LogError(ex, "Unhandled audit entity type: {Message}", ex.Message);
+                logger.LogError(ex, "Unhandled audit entity type: {Message} | {Method} {Path} | TraceId: {TraceId}", 
+                    ex.Message, httpContext.Request.Method, httpContext.Request.Path, httpContext.TraceIdentifier);
                 statusCode = StatusCodes.Status500InternalServerError;
                 message = ex.Message;
                 break;
 
             default:
-                logger.LogError(exception, "Unhandled exception");
+                logger.LogError(exception, "Unhandled exception | {Method} {Path} | TraceId: {TraceId}", 
+                    httpContext.Request.Method, httpContext.Request.Path, httpContext.TraceIdentifier);
                 statusCode = StatusCodes.Status500InternalServerError;
                 message = "An unexpected error occurred.";
                 break;
