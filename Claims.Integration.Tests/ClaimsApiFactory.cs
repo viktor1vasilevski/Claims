@@ -48,6 +48,7 @@ public class ClaimsApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
         Environment.SetEnvironmentVariable("ConnectionStrings__SqlServer", _sqlContainer.GetConnectionString());
         Environment.SetEnvironmentVariable("ConnectionStrings__MongoDb", _mongoContainer.GetConnectionString());
+        Environment.SetEnvironmentVariable("MongoDb__DatabaseName", "ClaimsTesting");
 
         using var scope = Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ClaimsContext>();
