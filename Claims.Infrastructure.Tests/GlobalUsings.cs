@@ -1,0 +1,13 @@
+global using Azure.Messaging.ServiceBus;
+global using Claims.Application.Channels;
+global using Claims.Application.Interfaces.Messaging;
+global using Claims.Domain.Enums;
+global using Claims.Domain.Interfaces;
+global using Claims.Infrastructure.BackgroundServices;
+global using Claims.Infrastructure.Messaging;
+global using FluentAssertions;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;
+global using Moq;
+global using System.Text.Json;
+global using System.Threading.Channels;

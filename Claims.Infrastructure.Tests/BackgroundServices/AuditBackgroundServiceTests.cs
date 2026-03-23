@@ -1,13 +1,3 @@
-using Claims.Application.Channels;
-using Claims.Application.Interfaces.Messaging;
-using Claims.Domain.Enums;
-using Claims.Domain.Interfaces;
-using Claims.Infrastructure.BackgroundServices;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Moq;
-using System.Threading.Channels;
-
 namespace Claims.Infrastructure.Tests.BackgroundServices;
 
 public class AuditBackgroundServiceTests

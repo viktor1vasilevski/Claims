@@ -1,8 +1,3 @@
-using Claims.Domain.Enums;
-using Claims.Domain.Exceptions;
-using Claims.Domain.Models;
-using FluentAssertions;
-
 namespace Claims.Domain.Tests.Models;
 
 public class CoverTests
