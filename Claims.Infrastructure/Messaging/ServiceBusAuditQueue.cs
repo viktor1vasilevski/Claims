@@ -61,7 +61,7 @@ public class ServiceBusAuditQueue : IAuditMessageSender, IAuditMessageReceiver, 
             {
                 var message = JsonSerializer.Deserialize<AuditMessage>(args.Message.Body.ToString(), JsonOptions)!;
                 await channel.Writer.WriteAsync(message, cancellationToken);
-                await args.CompleteMessageAsync(args.Message, cancellationToken);
+                await args.CompleteMessageAsync(args.Message, CancellationToken.None);
             }
             catch (JsonException ex)
             {
