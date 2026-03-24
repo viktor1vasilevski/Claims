@@ -38,6 +38,7 @@ public class ClaimsServiceTests
 
         // Assert
         result.Should().HaveCount(2);
+        result.Should().AllBeOfType<ClaimDto>();
     }
 
     [Fact]
@@ -55,6 +56,7 @@ public class ClaimsServiceTests
         // Assert
         result.Should().NotBeNull();
         result!.Id.Should().Be(claim.Id);
+        result.Should().BeOfType<ClaimDto>();
     }
 
     [Fact]
@@ -161,6 +163,7 @@ public class ClaimsServiceTests
 
         // Assert
         result.Should().NotBeNull();
+        result.Should().BeOfType<ClaimDto>();
         result.CoverId.Should().Be(cover.Id);
         _claimsRepositoryMock.Verify(x => x.CreateClaimAsync(It.IsAny<Claim>(), It.IsAny<CancellationToken>()), Times.Once);
         _auditServiceMock.Verify(x => x.AuditClaimAsync(It.IsAny<string>(), HttpRequestType.POST), Times.Once);

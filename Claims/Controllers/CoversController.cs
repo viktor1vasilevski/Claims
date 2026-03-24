@@ -18,8 +18,8 @@ public class CoversController(ICoversService coversService) : ControllerBase
     [ProducesResponseType(typeof(IReadOnlyList<CoverDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<CoverDto>>> Get(CancellationToken cancellationToken)
     {
-        var covers = await coversService.GetCoversAsync(cancellationToken);
-        return Ok(covers.Select(CoverMapper.ToDto));
+        var response = await coversService.GetCoversAsync(cancellationToken);
+        return Ok(response);
     }
 
     /// <summary>
@@ -33,8 +33,8 @@ public class CoversController(ICoversService coversService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CoverDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var cover = await coversService.GetCoverByIdAsync(id, cancellationToken);
-        return cover is null ? NotFound() : Ok(CoverMapper.ToDto(cover));
+        var response = await coversService.GetCoverByIdAsync(id, cancellationToken);
+        return response is null ? NotFound() : Ok(response);
     }
 
     /// <summary>
@@ -48,8 +48,8 @@ public class CoversController(ICoversService coversService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CoverDto>> Create(CreateCoverRequest request, CancellationToken cancellationToken)
     {
-        var cover = await coversService.CreateCoverAsync(request, cancellationToken);
-        return CreatedAtAction(nameof(GetById), new { id = cover.Id }, CoverMapper.ToDto(cover));
+        var response = await coversService.CreateCoverAsync(request, cancellationToken);
+        return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
     }
 
     /// <summary>
@@ -78,7 +78,7 @@ public class CoversController(ICoversService coversService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public ActionResult ComputePremium([FromQuery] ComputePremiumRequest request)
     {
-        var result = coversService.ComputePremium(request);
-        return Ok(result);
+        var response = coversService.ComputePremium(request);
+        return Ok(response);
     }
 }

@@ -1,4 +1,6 @@
+global using Claims.Application.DTOs;
 global using Claims.Application.Interfaces.Messaging;
+global using Claims.Application.Mappers;
 global using Claims.Application.Interfaces.Services;
 global using Claims.Application.Interfaces.Strategies;
 global using Claims.Application.Services;

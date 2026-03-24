@@ -18,8 +18,8 @@ public class ClaimsController(IClaimsService claimsService) : ControllerBase
     [ProducesResponseType(typeof(IReadOnlyList<ClaimDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<ClaimDto>>> Get(CancellationToken cancellationToken)
     {
-        var claims = await claimsService.GetClaimsAsync(cancellationToken);
-        return Ok(claims.Select(ClaimMapper.ToDto));
+        var response = await claimsService.GetClaimsAsync(cancellationToken);
+        return Ok(response);
     }
 
     /// <summary>
@@ -33,8 +33,8 @@ public class ClaimsController(IClaimsService claimsService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ClaimDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var claim = await claimsService.GetClaimByIdAsync(id, cancellationToken);
-        return claim is null ? NotFound() : Ok(ClaimMapper.ToDto(claim));
+        var response = await claimsService.GetClaimByIdAsync(id, cancellationToken);
+        return response is null ? NotFound() : Ok(response);
     }
 
     /// <summary>
@@ -49,8 +49,8 @@ public class ClaimsController(IClaimsService claimsService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ClaimDto>> Create(CreateClaimRequest request, CancellationToken cancellationToken)
     {
-        var claim = await claimsService.CreateClaimAsync(request, cancellationToken);
-        return CreatedAtAction(nameof(GetById), new { id = claim.Id }, ClaimMapper.ToDto(claim));
+        var response = await claimsService.CreateClaimAsync(request, cancellationToken);
+        return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
     }
 
     /// <summary>

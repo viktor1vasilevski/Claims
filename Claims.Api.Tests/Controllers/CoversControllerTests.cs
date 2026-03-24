@@ -1,6 +1,5 @@
 using Claims.Application.Requests.Cover;
 using Claims.Controllers;
-using Claims.Domain.Models;
 
 namespace Claims.Api.Tests.Controllers;
 
@@ -15,44 +14,44 @@ public class CoversControllerTests
     }
 
     [Fact]
-    public async Task Get_ShouldReturn200WithMappedDtos()
+    public async Task Get_ShouldReturn200WithDtos()
     {
         // Arrange
-        var covers = new List<Cover>
+        var dtos = new List<CoverDto>
         {
-            Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 6, 1), CoverType.Yacht, 10_000),
-            Cover.Create(new DateTime(2026, 2, 1), new DateTime(2026, 7, 1), CoverType.Tanker, 20_000)
+            new() { Id = Guid.NewGuid(), StartDate = new DateTime(2026, 1, 1), EndDate = new DateTime(2026, 6, 1), Type = CoverType.Yacht, Premium = 10_000 },
+            new() { Id = Guid.NewGuid(), StartDate = new DateTime(2026, 2, 1), EndDate = new DateTime(2026, 7, 1), Type = CoverType.Tanker, Premium = 20_000 }
         };
         _coversServiceMock
             .Setup(x => x.GetCoversAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(covers);
+            .ReturnsAsync(dtos);
 
         // Act
         var result = await _sut.Get(CancellationToken.None);
 
         // Assert
         var ok = result.Result.Should().BeOfType<OkObjectResult>().Subject;
-        var dtos = ok.Value.Should().BeAssignableTo<IEnumerable<CoverDto>>().Subject;
-        dtos.Should().HaveCount(2);
+        var returned = ok.Value.Should().BeAssignableTo<IEnumerable<CoverDto>>().Subject;
+        returned.Should().HaveCount(2);
     }
 
     [Fact]
     public async Task GetById_WhenCoverExists_ShouldReturn200WithDto()
     {
         // Arrange
-        var cover = Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 6, 1), CoverType.Yacht, 10_000);
+        var dto = new CoverDto { Id = Guid.NewGuid(), StartDate = new DateTime(2026, 1, 1), EndDate = new DateTime(2026, 6, 1), Type = CoverType.Yacht, Premium = 10_000 };
         _coversServiceMock
-            .Setup(x => x.GetCoverByIdAsync(cover.Id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(cover);
+            .Setup(x => x.GetCoverByIdAsync(dto.Id!.Value, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(dto);
 
         // Act
-        var result = await _sut.GetById(cover.Id, CancellationToken.None);
+        var result = await _sut.GetById(dto.Id!.Value, CancellationToken.None);
 
         // Assert
         var ok = result.Result.Should().BeOfType<OkObjectResult>().Subject;
-        var dto = ok.Value.Should().BeOfType<CoverDto>().Subject;
-        dto.Id.Should().Be(cover.Id);
-        dto.Type.Should().Be(CoverType.Yacht);
+        var returned = ok.Value.Should().BeOfType<CoverDto>().Subject;
+        returned.Id.Should().Be(dto.Id);
+        returned.Type.Should().Be(CoverType.Yacht);
     }
 
     [Fact]
@@ -62,7 +61,7 @@ public class CoversControllerTests
         var id = Guid.NewGuid();
         _coversServiceMock
             .Setup(x => x.GetCoverByIdAsync(id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Cover?)null);
+            .ReturnsAsync((CoverDto?)null);
 
         // Act
         var result = await _sut.GetById(id, CancellationToken.None);
@@ -81,10 +80,10 @@ public class CoversControllerTests
             EndDate = new DateTime(2026, 6, 1),
             Type = CoverType.Tanker
         };
-        var cover = Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 6, 1), CoverType.Tanker, 15_000);
+        var dto = new CoverDto { Id = Guid.NewGuid(), StartDate = new DateTime(2026, 1, 1), EndDate = new DateTime(2026, 6, 1), Type = CoverType.Tanker, Premium = 15_000 };
         _coversServiceMock
             .Setup(x => x.CreateCoverAsync(request, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(cover);
+            .ReturnsAsync(dto);
 
         // Act
         var result = await _sut.Create(request, CancellationToken.None);
@@ -92,9 +91,9 @@ public class CoversControllerTests
         // Assert
         var created = result.Result.Should().BeOfType<CreatedAtActionResult>().Subject;
         created.ActionName.Should().Be(nameof(_sut.GetById));
-        created.RouteValues!["id"].Should().Be(cover.Id);
-        var dto = created.Value.Should().BeOfType<CoverDto>().Subject;
-        dto.Id.Should().Be(cover.Id);
+        created.RouteValues!["id"].Should().Be(dto.Id);
+        var returned = created.Value.Should().BeOfType<CoverDto>().Subject;
+        returned.Id.Should().Be(dto.Id);
     }
 
     [Fact]

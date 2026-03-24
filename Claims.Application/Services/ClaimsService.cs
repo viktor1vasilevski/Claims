@@ -3,13 +3,19 @@ namespace Claims.Application.Services;
 public class ClaimsService(IClaimsRepository claimsRepository, IAuditService auditService,
     ICoversRepository coversRepository) : IClaimsService
 {
-    public async Task<IReadOnlyList<Claim>> GetClaimsAsync(CancellationToken cancellationToken = default)
-        => await claimsRepository.GetClaimsAsync(cancellationToken);
+    public async Task<IReadOnlyList<ClaimDto>> GetClaimsAsync(CancellationToken cancellationToken = default)
+    {
+        var claims = await claimsRepository.GetClaimsAsync(cancellationToken);
+        return claims.Select(ClaimMapper.ToDto).ToList();
+    }
 
-    public async Task<Claim?> GetClaimByIdAsync(Guid id, CancellationToken cancellationToken = default)
-        => await claimsRepository.GetClaimByIdAsync(id, cancellationToken);
+    public async Task<ClaimDto?> GetClaimByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var claim = await claimsRepository.GetClaimByIdAsync(id, cancellationToken);
+        return claim is null ? null : ClaimMapper.ToDto(claim);
+    }
 
-    public async Task<Claim> CreateClaimAsync(CreateClaimRequest request, CancellationToken cancellationToken = default)
+    public async Task<ClaimDto> CreateClaimAsync(CreateClaimRequest request, CancellationToken cancellationToken = default)
     {
         var cover = await coversRepository.GetCoverByIdAsync(request.CoverId, cancellationToken);
 
@@ -24,7 +30,7 @@ public class ClaimsService(IClaimsRepository claimsRepository, IAuditService aud
         await claimsRepository.CreateClaimAsync(claim, cancellationToken);
         await auditService.AuditClaimAsync(claim.Id.ToString(), HttpRequestType.POST);
 
-        return claim;
+        return ClaimMapper.ToDto(claim);
     }
 
     public async Task DeleteClaimAsync(Guid id, CancellationToken cancellationToken = default)

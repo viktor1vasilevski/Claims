@@ -1,6 +1,5 @@
 using Claims.Application.Requests.Claims;
 using Claims.Controllers;
-using Claims.Domain.Models;
 
 namespace Claims.Api.Tests.Controllers;
 
@@ -15,45 +14,44 @@ public class ClaimsControllerTests
     }
 
     [Fact]
-    public async Task Get_ShouldReturn200WithMappedDtos()
+    public async Task Get_ShouldReturn200WithDtos()
     {
         // Arrange
-        var coverId = Guid.NewGuid();
-        var claims = new List<Claim>
+        var dtos = new List<ClaimDto>
         {
-            Claim.Create(coverId, "Claim 1", ClaimType.Collision, 1000, DateTime.UtcNow),
-            Claim.Create(coverId, "Claim 2", ClaimType.Fire, 2000, DateTime.UtcNow)
+            new() { Id = Guid.NewGuid(), CoverId = Guid.NewGuid(), Name = "Claim 1", Type = ClaimType.Collision, DamageCost = 1000 },
+            new() { Id = Guid.NewGuid(), CoverId = Guid.NewGuid(), Name = "Claim 2", Type = ClaimType.Fire, DamageCost = 2000 }
         };
         _claimsServiceMock
             .Setup(x => x.GetClaimsAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(claims);
+            .ReturnsAsync(dtos);
 
         // Act
         var result = await _sut.Get(CancellationToken.None);
 
         // Assert
         var ok = result.Result.Should().BeOfType<OkObjectResult>().Subject;
-        var dtos = ok.Value.Should().BeAssignableTo<IEnumerable<ClaimDto>>().Subject;
-        dtos.Should().HaveCount(2);
+        var returned = ok.Value.Should().BeAssignableTo<IEnumerable<ClaimDto>>().Subject;
+        returned.Should().HaveCount(2);
     }
 
     [Fact]
     public async Task GetById_WhenClaimExists_ShouldReturn200WithDto()
     {
         // Arrange
-        var claim = Claim.Create(Guid.NewGuid(), "Test Claim", ClaimType.Collision, 5000, DateTime.UtcNow);
+        var dto = new ClaimDto { Id = Guid.NewGuid(), CoverId = Guid.NewGuid(), Name = "Test Claim", Type = ClaimType.Collision, DamageCost = 5000 };
         _claimsServiceMock
-            .Setup(x => x.GetClaimByIdAsync(claim.Id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(claim);
+            .Setup(x => x.GetClaimByIdAsync(dto.Id!.Value, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(dto);
 
         // Act
-        var result = await _sut.GetById(claim.Id, CancellationToken.None);
+        var result = await _sut.GetById(dto.Id!.Value, CancellationToken.None);
 
         // Assert
         var ok = result.Result.Should().BeOfType<OkObjectResult>().Subject;
-        var dto = ok.Value.Should().BeOfType<ClaimDto>().Subject;
-        dto.Id.Should().Be(claim.Id);
-        dto.Name.Should().Be("Test Claim");
+        var returned = ok.Value.Should().BeOfType<ClaimDto>().Subject;
+        returned.Id.Should().Be(dto.Id);
+        returned.Name.Should().Be("Test Claim");
     }
 
     [Fact]
@@ -63,7 +61,7 @@ public class ClaimsControllerTests
         var id = Guid.NewGuid();
         _claimsServiceMock
             .Setup(x => x.GetClaimByIdAsync(id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Claim?)null);
+            .ReturnsAsync((ClaimDto?)null);
 
         // Act
         var result = await _sut.GetById(id, CancellationToken.None);
@@ -85,10 +83,10 @@ public class ClaimsControllerTests
             DamageCost = 10_000,
             Created = DateTime.UtcNow
         };
-        var claim = Claim.Create(coverId, "New Claim", ClaimType.Fire, 10_000, DateTime.UtcNow);
+        var dto = new ClaimDto { Id = Guid.NewGuid(), CoverId = coverId, Name = "New Claim", Type = ClaimType.Fire, DamageCost = 10_000 };
         _claimsServiceMock
             .Setup(x => x.CreateClaimAsync(request, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(claim);
+            .ReturnsAsync(dto);
 
         // Act
         var result = await _sut.Create(request, CancellationToken.None);
@@ -96,9 +94,9 @@ public class ClaimsControllerTests
         // Assert
         var created = result.Result.Should().BeOfType<CreatedAtActionResult>().Subject;
         created.ActionName.Should().Be(nameof(_sut.GetById));
-        created.RouteValues!["id"].Should().Be(claim.Id);
-        var dto = created.Value.Should().BeOfType<ClaimDto>().Subject;
-        dto.Id.Should().Be(claim.Id);
+        created.RouteValues!["id"].Should().Be(dto.Id);
+        var returned = created.Value.Should().BeOfType<ClaimDto>().Subject;
+        returned.Id.Should().Be(dto.Id);
     }
 
     [Fact]

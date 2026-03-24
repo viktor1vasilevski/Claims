@@ -43,6 +43,7 @@ public class CoversServiceTests
 
         // Assert
         result.Should().HaveCount(2);
+        result.Should().AllBeOfType<CoverDto>();
     }
 
     [Fact]
@@ -59,6 +60,7 @@ public class CoversServiceTests
 
         // Assert
         result.Should().NotBeNull();
+        result.Should().BeOfType<CoverDto>();
         result!.Id.Should().Be(cover.Id);
     }
 
@@ -93,6 +95,7 @@ public class CoversServiceTests
 
         // Assert
         result.Should().NotBeNull();
+        result.Should().BeOfType<CoverDto>();
         result.Type.Should().Be(CoverType.Yacht);
         result.Premium.Should().Be(50000m);
         _coversRepositoryMock.Verify(x => x.CreateCoverAsync(It.IsAny<Cover>(), It.IsAny<CancellationToken>()), Times.Once);
