@@ -93,7 +93,7 @@ public class ClaimsServiceTests
     public async Task CreateClaimAsync_WhenCreatedDateOutsideCoverPeriod_ShouldThrowClaimDateOutOfRangeException()
     {
         // Arrange
-        var cover = Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 12, 31), CoverType.Yacht, 0);
+        var cover = Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 12, 31), CoverType.Yacht, 10000m);
         var request = new CreateClaimRequest
         {
             CoverId = cover.Id,
@@ -118,7 +118,7 @@ public class ClaimsServiceTests
     public async Task CreateClaimAsync_WhenCreatedDateAfterCoverEndDate_ShouldThrowClaimDateOutOfRangeException()
     {
         // Arrange
-        var cover = Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 12, 31), CoverType.Yacht, 0);
+        var cover = Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 12, 31), CoverType.Yacht, 10000m);
         var request = new CreateClaimRequest
         {
             CoverId = cover.Id,
@@ -143,7 +143,7 @@ public class ClaimsServiceTests
     public async Task CreateClaimAsync_WhenValid_ShouldCreateClaimAndAudit()
     {
         // Arrange
-        var cover = Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 12, 31), CoverType.Yacht, 0);
+        var cover = Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 12, 31), CoverType.Yacht, 10000m);
         var request = new CreateClaimRequest
         {
             CoverId = cover.Id,

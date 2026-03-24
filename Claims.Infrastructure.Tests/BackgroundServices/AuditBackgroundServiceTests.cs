@@ -78,7 +78,7 @@ public class AuditBackgroundServiceTests
             .ThrowsAsync(new Exception("Processing failed"));
 
         // Act
-        sut.StartAsync(cts.Token);
+        _ = sut.StartAsync(cts.Token);
         await _queue.SendAsync(new AuditMessage("123", HttpRequestType.POST, AuditEntityType.Claim));
         await _queue.SendAsync(new AuditMessage("456", HttpRequestType.POST, AuditEntityType.Claim));
 

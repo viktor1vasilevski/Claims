@@ -14,6 +14,9 @@ public class Cover
 
     public static Cover Create(DateTime startDate, DateTime endDate, CoverType type, decimal premium)
     {
+        if (premium <= 0)
+            throw new InvalidPremiumException(premium);
+
         if (endDate <= startDate)
             throw new InvalidCoverPeriodException("EndDate must be after StartDate.");
 

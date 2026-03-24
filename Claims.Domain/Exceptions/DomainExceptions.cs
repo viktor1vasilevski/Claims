@@ -21,5 +21,11 @@ public class UnhandledAuditEntityTypeException(AuditEntityType entityType)
 public class InvalidDamageCostException(decimal damageCost)
     : Exception($"DamageCost '{damageCost}' is invalid. Must be greater than 0 and no more than 100,000.");
 
+public class InvalidClaimNameException()
+    : Exception("Claim name cannot be empty.");
+
+public class InvalidPremiumException(decimal premium)
+    : Exception($"Premium '{premium}' is invalid. Must be greater than 0.");
+
 public class InvalidCoverPeriodException(string reason)
     : Exception(reason);

@@ -36,16 +36,16 @@ public class CoverMapperTests
     }
 
     [Fact]
-    public void ToDto_ShouldPreserveZeroPremium()
+    public void ToDto_ShouldPreserveSmallPremiumValue()
     {
         // Arrange
-        var cover = Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 6, 1), CoverType.BulkCarrier, 0);
+        var cover = Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 6, 1), CoverType.BulkCarrier, 0.01m);
 
         // Act
         var dto = CoverMapper.ToDto(cover);
 
         // Assert
-        dto.Premium.Should().Be(0);
+        dto.Premium.Should().Be(0.01m);
     }
 
     [Fact]

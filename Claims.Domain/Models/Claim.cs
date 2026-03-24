@@ -15,6 +15,9 @@ public class Claim
 
     public static Claim Create(Guid coverId, string name, ClaimType type, decimal damageCost, DateTime created)
     {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new InvalidClaimNameException();
+
         if (damageCost <= 0 || damageCost > 100_000)
             throw new InvalidDamageCostException(damageCost);
 

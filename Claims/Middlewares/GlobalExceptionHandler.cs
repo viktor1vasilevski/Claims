@@ -46,9 +46,37 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IPro
                 break;
 
             case ClaimNotFoundException ex:
-                logger.LogWarning(ex, "Claim not found: {Message} | {Method} {Path} | TraceId: {TraceId}", 
+                logger.LogWarning(ex, "Claim not found: {Message} | {Method} {Path} | TraceId: {TraceId}",
                     ex.Message, httpContext.Request.Method, httpContext.Request.Path, httpContext.TraceIdentifier);
                 statusCode = StatusCodes.Status404NotFound;
+                message = ex.Message;
+                break;
+
+            case InvalidClaimNameException ex:
+                logger.LogWarning(ex, "Invalid claim name: {Message} | {Method} {Path} | TraceId: {TraceId}",
+                    ex.Message, httpContext.Request.Method, httpContext.Request.Path, httpContext.TraceIdentifier);
+                statusCode = StatusCodes.Status400BadRequest;
+                message = ex.Message;
+                break;
+
+            case InvalidDamageCostException ex:
+                logger.LogWarning(ex, "Invalid damage cost: {Message} | {Method} {Path} | TraceId: {TraceId}",
+                    ex.Message, httpContext.Request.Method, httpContext.Request.Path, httpContext.TraceIdentifier);
+                statusCode = StatusCodes.Status400BadRequest;
+                message = ex.Message;
+                break;
+
+            case InvalidPremiumException ex:
+                logger.LogWarning(ex, "Invalid premium: {Message} | {Method} {Path} | TraceId: {TraceId}",
+                    ex.Message, httpContext.Request.Method, httpContext.Request.Path, httpContext.TraceIdentifier);
+                statusCode = StatusCodes.Status400BadRequest;
+                message = ex.Message;
+                break;
+
+            case InvalidCoverPeriodException ex:
+                logger.LogWarning(ex, "Invalid cover period: {Message} | {Method} {Path} | TraceId: {TraceId}",
+                    ex.Message, httpContext.Request.Method, httpContext.Request.Path, httpContext.TraceIdentifier);
+                statusCode = StatusCodes.Status400BadRequest;
                 message = ex.Message;
                 break;
 

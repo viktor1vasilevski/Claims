@@ -29,6 +29,17 @@ public class ClaimTests
     }
 
     [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData(null)]
+    public void Create_WhenNameIsNullOrWhitespace_ShouldThrowInvalidClaimNameException(string? name)
+    {
+        var act = () => Claim.Create(ValidCoverId, name!, ClaimType.Collision, 5000m, DateTime.UtcNow);
+
+        act.Should().Throw<InvalidClaimNameException>();
+    }
+
+    [Theory]
     [InlineData(0)]
     [InlineData(-1)]
     [InlineData(-100)]
