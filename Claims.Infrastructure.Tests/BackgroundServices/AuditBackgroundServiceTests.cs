@@ -65,16 +65,25 @@ public class AuditBackgroundServiceTests
         // Arrange
         var sut = CreateSut();
         var cts = new CancellationTokenSource();
+        var processedCount = 0;
+        var allProcessed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
 
         _processorMock
             .Setup(x => x.ProcessAsync(It.IsAny<IAuditRepository>(), It.IsAny<AuditMessage>(), It.IsAny<CancellationToken>()))
+            .Callback(() =>
+            {
+                if (Interlocked.Increment(ref processedCount) == 2)
+                    allProcessed.TrySetResult();
+            })
             .ThrowsAsync(new Exception("Processing failed"));
 
         // Act
-        var task = sut.StartAsync(cts.Token);
+        sut.StartAsync(cts.Token);
         await _queue.SendAsync(new AuditMessage("123", HttpRequestType.POST, AuditEntityType.Claim));
         await _queue.SendAsync(new AuditMessage("456", HttpRequestType.POST, AuditEntityType.Claim));
-        await Task.Delay(100);
+
+        // Wait until both messages have been attempted, with a timeout to prevent the test hanging
+        await allProcessed.Task.WaitAsync(TimeSpan.FromSeconds(5));
         await cts.CancelAsync();
 
         // Assert - both messages were attempted despite the first throwing
