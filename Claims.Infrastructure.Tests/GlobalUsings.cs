@@ -9,5 +9,6 @@ global using FluentAssertions;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;
 global using Moq;
+global using Polly;
 global using System.Text.Json;
 global using System.Threading.Channels;
