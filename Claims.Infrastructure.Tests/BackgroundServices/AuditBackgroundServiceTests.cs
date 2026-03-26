@@ -14,7 +14,7 @@ public class AuditBackgroundServiceTests
 
         var scopeFactory = services.BuildServiceProvider().GetRequiredService<IServiceScopeFactory>();
 
-        return new AuditBackgroundService(_queue, scopeFactory, _processorMock.Object, _loggerMock.Object);
+        return new AuditBackgroundService(_queue, scopeFactory, _processorMock.Object, _loggerMock.Object, ResiliencePipeline.Empty);
     }
 
     [Fact]
@@ -103,14 +103,65 @@ public class AuditBackgroundServiceTests
             Times.Exactly(2));
     }
 
+    [Fact]
+    public async Task ExecuteAsync_WhenMongoWriteSucceeds_ShouldAcknowledgeMessage()
+    {
+        // Arrange
+        var sut = CreateSut();
+        var cts = new CancellationTokenSource();
+        var acknowledged = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        // Act
+        _ = sut.StartAsync(cts.Token);
+        await _queue.SendAsync(
+            new AuditMessage("123", HttpRequestType.POST, AuditEntityType.Claim),
+            () => { acknowledged.TrySetResult(); return Task.CompletedTask; });
+
+        await acknowledged.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        await cts.CancelAsync();
+
+        // Assert - message was acknowledged, so it would be removed from the queue
+        acknowledged.Task.IsCompletedSuccessfully.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenMongoWriteFails_ShouldNotAcknowledgeMessage()
+    {
+        // Arrange
+        var sut = CreateSut();
+        var cts = new CancellationTokenSource();
+        var acknowledged = false;
+        var processed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        _processorMock
+            .Setup(x => x.ProcessAsync(It.IsAny<IAuditRepository>(), It.IsAny<AuditMessage>(), It.IsAny<CancellationToken>()))
+            .Callback(() => processed.TrySetResult())
+            .ThrowsAsync(new Exception("MongoDB is down"));
+
+        // Act
+        _ = sut.StartAsync(cts.Token);
+        await _queue.SendAsync(
+            new AuditMessage("123", HttpRequestType.POST, AuditEntityType.Claim),
+            () => { acknowledged = true; return Task.CompletedTask; });
+
+        await processed.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        await cts.CancelAsync();
+
+        // Assert - message was not acknowledged, so Service Bus will redeliver it
+        acknowledged.Should().BeFalse();
+    }
+
     private sealed class TestMessageQueue : IAuditMessageSender, IAuditMessageReceiver
     {
-        private readonly Channel<AuditMessage> _channel = Channel.CreateUnbounded<AuditMessage>();
+        private readonly Channel<AuditMessageEnvelope> _channel = Channel.CreateUnbounded<AuditMessageEnvelope>();
 
         public async Task SendAsync(AuditMessage message, CancellationToken cancellationToken = default)
-            => await _channel.Writer.WriteAsync(message, cancellationToken);
+            => await _channel.Writer.WriteAsync(new AuditMessageEnvelope(message, () => Task.CompletedTask), cancellationToken);
 
-        public IAsyncEnumerable<AuditMessage> ReadAllAsync(CancellationToken cancellationToken)
+        public async Task SendAsync(AuditMessage message, Func<Task> acknowledgeAsync, CancellationToken cancellationToken = default)
+            => await _channel.Writer.WriteAsync(new AuditMessageEnvelope(message, acknowledgeAsync), cancellationToken);
+
+        public IAsyncEnumerable<AuditMessageEnvelope> ReadAllAsync(CancellationToken cancellationToken)
             => _channel.Reader.ReadAllAsync(cancellationToken);
     }
 }

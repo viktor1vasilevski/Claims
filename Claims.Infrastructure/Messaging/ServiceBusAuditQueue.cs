@@ -46,9 +46,9 @@ public class ServiceBusAuditQueue : IAuditMessageSender, IAuditMessageReceiver, 
         }
     }
 
-    public async IAsyncEnumerable<AuditMessage> ReadAllAsync([EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<AuditMessageEnvelope> ReadAllAsync([EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var channel = Channel.CreateUnbounded<AuditMessage>();
+        var channel = Channel.CreateUnbounded<AuditMessageEnvelope>();
 
         var processor = _client.CreateProcessor(_queueName, new ServiceBusProcessorOptions
         {
@@ -57,21 +57,28 @@ public class ServiceBusAuditQueue : IAuditMessageSender, IAuditMessageReceiver, 
 
         processor.ProcessMessageAsync += async args =>
         {
+            AuditMessage message;
             try
             {
-                var message = JsonSerializer.Deserialize<AuditMessage>(args.Message.Body.ToString(), JsonOptions)!;
-                await channel.Writer.WriteAsync(message, cancellationToken);
-                await args.CompleteMessageAsync(args.Message, CancellationToken.None);
+                message = JsonSerializer.Deserialize<AuditMessage>(args.Message.Body.ToString(), JsonOptions)!;
             }
             catch (JsonException ex)
             {
                 _logger.LogError(ex, "Failed to deserialize audit message from Service Bus. Dead-lettering.");
                 await args.DeadLetterMessageAsync(args.Message, cancellationToken: cancellationToken);
+                return;
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+
+            var acknowledged = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            var envelope = new AuditMessageEnvelope(message, async () =>
             {
-                _logger.LogWarning(ex, "Transient error processing audit message for {MessageId}. Will retry.", args.Message.MessageId);
-            }
+                await args.CompleteMessageAsync(args.Message, CancellationToken.None);
+                acknowledged.TrySetResult();
+            });
+
+            await channel.Writer.WriteAsync(envelope, cancellationToken);
+            await acknowledged.Task;
         };
 
         processor.ProcessErrorAsync += args =>
@@ -84,8 +91,8 @@ public class ServiceBusAuditQueue : IAuditMessageSender, IAuditMessageReceiver, 
 
         try
         {
-            await foreach (var message in channel.Reader.ReadAllAsync(cancellationToken))
-                yield return message;
+            await foreach (var envelope in channel.Reader.ReadAllAsync(cancellationToken))
+                yield return envelope;
         }
         finally
         {

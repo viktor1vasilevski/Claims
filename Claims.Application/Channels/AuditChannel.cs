@@ -4,6 +4,8 @@ namespace Claims.Application.Channels;
 
 public record AuditMessage(string Id, HttpRequestType HttpRequestType, AuditEntityType EntityType);
 
+public record AuditMessageEnvelope(AuditMessage Message, Func<Task> AcknowledgeAsync);
+
 public class AuditChannel
 {
     private readonly Channel<AuditMessage> _channel = Channel.CreateUnbounded<AuditMessage>();

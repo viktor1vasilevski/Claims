@@ -4,5 +4,5 @@ namespace Claims.Application.Interfaces.Messaging;
 
 public interface IAuditMessageReceiver
 {
-    IAsyncEnumerable<AuditMessage> ReadAllAsync(CancellationToken cancellationToken);
+    IAsyncEnumerable<AuditMessageEnvelope> ReadAllAsync(CancellationToken cancellationToken);
 }

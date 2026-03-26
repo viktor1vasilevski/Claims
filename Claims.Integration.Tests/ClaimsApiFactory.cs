@@ -59,12 +59,12 @@ public class ClaimsApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     private sealed class InProcessAuditQueue : IAuditMessageSender, IAuditMessageReceiver
     {
-        private readonly Channel<AuditMessage> _channel = Channel.CreateUnbounded<AuditMessage>();
+        private readonly Channel<AuditMessageEnvelope> _channel = Channel.CreateUnbounded<AuditMessageEnvelope>();
 
         public async Task SendAsync(AuditMessage message, CancellationToken cancellationToken = default)
-            => await _channel.Writer.WriteAsync(message, cancellationToken);
+            => await _channel.Writer.WriteAsync(new AuditMessageEnvelope(message, () => Task.CompletedTask), cancellationToken);
 
-        public IAsyncEnumerable<AuditMessage> ReadAllAsync(CancellationToken cancellationToken)
+        public IAsyncEnumerable<AuditMessageEnvelope> ReadAllAsync(CancellationToken cancellationToken)
             => _channel.Reader.ReadAllAsync(cancellationToken);
     }
 }
