@@ -1,6 +1,5 @@
 using Azure.Messaging.ServiceBus;
 using Claims.Application.Channels;
-using Claims.Application.Interfaces.Messaging;
 using Microsoft.Extensions.Logging;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
