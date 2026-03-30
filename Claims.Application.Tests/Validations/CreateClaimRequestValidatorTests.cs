@@ -36,6 +36,7 @@ public class CreateClaimRequestValidatorTests
     [Theory]
     [InlineData("")]
     [InlineData(null)]
+    [InlineData("   ")]
     public async Task Validate_WhenNameIsEmpty_ShouldFailWithMessage(string? name)
     {
         var request = ValidRequest();

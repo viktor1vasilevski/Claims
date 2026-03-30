@@ -75,6 +75,18 @@ public class ClaimsServiceTests
     }
 
     [Fact]
+    public async Task GetClaimsAsync_WhenNoClaimsExist_ShouldReturnEmptyCollection()
+    {
+        _claimsRepositoryMock
+            .Setup(x => x.GetClaimsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Claim>());
+
+        var result = await _sut.GetClaimsAsync();
+
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task CreateClaimAsync_WhenCoverNotFound_ShouldThrowCoverNotFoundException()
     {
         // Arrange
@@ -167,6 +179,48 @@ public class ClaimsServiceTests
         result.CoverId.Should().Be(cover.Id);
         _claimsRepositoryMock.Verify(x => x.CreateClaimAsync(It.IsAny<Claim>(), It.IsAny<CancellationToken>()), Times.Once);
         _auditServiceMock.Verify(x => x.AuditClaimAsync(It.IsAny<string>(), HttpRequestType.POST), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateClaimAsync_WhenCreatedDateIsOnCoverStartDate_ShouldSucceed()
+    {
+        var cover = Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 12, 31), CoverType.Yacht, 10000m);
+        var request = new CreateClaimRequest
+        {
+            CoverId = cover.Id,
+            Created = new DateTime(2026, 1, 1),
+            Name = "Test",
+            Type = ClaimType.Collision,
+            DamageCost = 5000
+        };
+        _coversRepositoryMock
+            .Setup(x => x.GetCoverByIdAsync(cover.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(cover);
+
+        var act = async () => await _sut.CreateClaimAsync(request);
+
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task CreateClaimAsync_WhenCreatedDateIsOnCoverEndDate_ShouldSucceed()
+    {
+        var cover = Cover.Create(new DateTime(2026, 1, 1), new DateTime(2026, 12, 31), CoverType.Yacht, 10000m);
+        var request = new CreateClaimRequest
+        {
+            CoverId = cover.Id,
+            Created = new DateTime(2026, 12, 31),
+            Name = "Test",
+            Type = ClaimType.Collision,
+            DamageCost = 5000
+        };
+        _coversRepositoryMock
+            .Setup(x => x.GetCoverByIdAsync(cover.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(cover);
+
+        var act = async () => await _sut.CreateClaimAsync(request);
+
+        await act.Should().NotThrowAsync();
     }
 
     [Fact]

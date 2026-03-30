@@ -70,6 +70,21 @@ public class CoverTests
     }
 
     [Fact]
+    public void Create_WhenPeriodIsLessThanOneDay_ShouldNotThrow()
+    {
+        // The domain accepts sub-day periods as long as premium > 0.
+        // In practice the service computes the premium via the calculator first;
+        // the calculator truncates fractional days to zero, so Cover.Create ends up
+        // receiving 0m and throws InvalidPremiumException — an indirect and misleading error.
+        var start = new DateTime(2026, 1, 1, 0, 0, 0);
+        var end = new DateTime(2026, 1, 1, 12, 0, 0);
+
+        var act = () => Cover.Create(start, end, CoverType.Yacht, 1000m);
+
+        act.Should().NotThrow();
+    }
+
+    [Fact]
     public void IsDateWithinPeriod_WhenDateIsWithinPeriod_ShouldReturnTrue()
     {
         var cover = Cover.Create(Start, End, CoverType.Yacht, 1000m);

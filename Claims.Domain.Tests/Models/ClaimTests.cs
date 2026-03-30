@@ -70,4 +70,14 @@ public class ClaimTests
 
         act.Should().NotThrow();
     }
+
+    [Fact]
+    public void Create_WhenCoverIdIsEmpty_ShouldNotThrow()
+    {
+        // The domain model does not validate that CoverId is non-empty.
+        // Guid.Empty is silently accepted here; enforcement relies on the DB foreign key.
+        var act = () => Claim.Create(Guid.Empty, "Test", ClaimType.Collision, 5000m, DateTime.UtcNow);
+
+        act.Should().NotThrow();
+    }
 }

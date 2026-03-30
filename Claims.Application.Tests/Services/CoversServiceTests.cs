@@ -26,6 +26,18 @@ public class CoversServiceTests
     }
 
     [Fact]
+    public async Task GetCoversAsync_WhenNoCoversExist_ShouldReturnEmptyCollection()
+    {
+        _coversRepositoryMock
+            .Setup(x => x.GetCoversAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Cover>());
+
+        var result = await _sut.GetCoversAsync();
+
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task GetCoversAsync_ShouldReturnAllCovers()
     {
         // Arrange
@@ -142,6 +154,27 @@ public class CoversServiceTests
             .WithMessage($"Cover with id '{CoverId1}' was not found.");
         _coversRepositoryMock.Verify(x => x.DeleteCoverAsync(It.IsAny<Cover>(), It.IsAny<CancellationToken>()), Times.Never);
         _auditServiceMock.Verify(x => x.AuditCoverAsync(It.IsAny<string>(), It.IsAny<HttpRequestType>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task CreateCoverAsync_WhenCalculatorReturnsZeroPremium_ShouldThrowInvalidPremiumException()
+    {
+        // When a sub-day period is requested, the calculator truncates fractional days
+        // to zero and returns 0m. Cover.Create then throws InvalidPremiumException —
+        // a misleading error that says nothing about the period being too short.
+        var request = new CreateCoverRequest
+        {
+            StartDate = new DateTime(2026, 1, 1, 0, 0, 0),
+            EndDate = new DateTime(2026, 1, 1, 12, 0, 0),
+            Type = CoverType.Yacht
+        };
+        _premiumCalculatorMock
+            .Setup(x => x.Compute(request.StartDate, request.EndDate, request.Type))
+            .Returns(0m);
+
+        var act = async () => await _sut.CreateCoverAsync(request);
+
+        await act.Should().ThrowAsync<InvalidPremiumException>();
     }
 
     [Fact]

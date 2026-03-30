@@ -9,7 +9,7 @@ public class CreateClaimRequestValidator : AbstractValidator<CreateClaimRequest>
             .WithMessage("CoverId is required.");
 
         RuleFor(x => x.Name)
-            .NotEmpty()
+            .Must(name => !string.IsNullOrWhiteSpace(name))
             .WithMessage("Name is required.");
 
         RuleFor(x => x.Type)
