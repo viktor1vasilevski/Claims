@@ -30,7 +30,10 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build --no-restore
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Publish
+        run: dotnet publish Claims/Claims.Api.csproj --no-build --configuration Release --output ./publish
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
@@ -39,6 +42,12 @@ jobs:
           path: |
             **/bin/
             **/obj/
+
+      - name: Upload publish artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: publish
+          path: ./publish
 
   unit-tests:
     name: Unit Tests and Coverage
@@ -70,10 +79,11 @@ jobs:
 
       - name: Run unit tests
         run: |
-          dotnet test --no-build --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Application.Tests/Claims.Application.Tests.csproj
-          dotnet test --no-build --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Infrastructure.Tests/Claims.Infrastructure.Tests.csproj
-          dotnet test --no-build --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Api.Tests/Claims.Api.Tests.csproj
-          dotnet test --no-build --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Domain.Tests/Claims.Domain.Tests.csproj
+          dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Application.Tests/Claims.Application.Tests.csproj &
+          dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Infrastructure.Tests/Claims.Infrastructure.Tests.csproj &
+          dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Api.Tests/Claims.Api.Tests.csproj &
+          dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Domain.Tests/Claims.Domain.Tests.csproj &
+          wait
 
       - name: Generate coverage report
         uses: danielpalme/ReportGenerator-GitHub-Action@5
@@ -117,7 +127,7 @@ jobs:
           name: build
 
       - name: Run integration tests
-        run: dotnet test --no-build Claims.Integration.Tests/Claims.Integration.Tests.csproj
+        run: dotnet test --no-build --configuration Release Claims.Integration.Tests/Claims.Integration.Tests.csproj
 
   deploy-staging:
     name: Deploy to Staging
@@ -148,14 +158,20 @@ jobs:
       - name: Restore
         run: dotnet restore
 
-      - name: Build
-        run: dotnet build --no-restore --configuration Release
+      - name: Download publish artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: publish
+          path: ./publish
 
-      - name: Publish
-        run: dotnet publish Claims/Claims.Api.csproj --no-build --configuration Release --output ./publish
+      - name: Cache dotnet tools
+        uses: actions/cache@v4
+        with:
+          path: ~/.dotnet/tools
+          key: dotnet-tools-ef-${{ runner.os }}
 
       - name: Install EF Core tools
-        run: dotnet tool install --global dotnet-ef
+        run: dotnet tool install --global dotnet-ef || true
 
       - name: Run migrations
         run: dotnet ef database update --context ClaimsContext --project Claims.Infrastructure --startup-project Claims
