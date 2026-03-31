@@ -66,11 +66,16 @@ jobs:
 
       - name: Run unit tests
         run: |
-          dotnet test --no-restore --configuration Release --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Application.Tests/Claims.Application.Tests.csproj &
-          dotnet test --no-restore --configuration Release --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Infrastructure.Tests/Claims.Infrastructure.Tests.csproj &
-          dotnet test --no-restore --configuration Release --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Api.Tests/Claims.Api.Tests.csproj &
-          dotnet test --no-restore --configuration Release --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Domain.Tests/Claims.Domain.Tests.csproj &
-          wait
+          dotnet test --no-restore --configuration Release --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Application.Tests/Claims.Application.Tests.csproj & pid1=$!
+          dotnet test --no-restore --configuration Release --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Infrastructure.Tests/Claims.Infrastructure.Tests.csproj & pid2=$!
+          dotnet test --no-restore --configuration Release --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Api.Tests/Claims.Api.Tests.csproj & pid3=$!
+          dotnet test --no-restore --configuration Release --collect:"XPlat Code Coverage" --settings coverlet.runsettings Claims.Domain.Tests/Claims.Domain.Tests.csproj & pid4=$!
+          failed=0
+          wait $pid1 || failed=1
+          wait $pid2 || failed=1
+          wait $pid3 || failed=1
+          wait $pid4 || failed=1
+          exit $failed
 
       - name: Generate coverage report
         uses: danielpalme/ReportGenerator-GitHub-Action@5
